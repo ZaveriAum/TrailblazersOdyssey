@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TextInput, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, FlatList, TextInput, StyleSheet } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import NavigationBar from '../components/NavigationBar';
 
@@ -21,8 +21,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      
-      <NavigationBar/>
+      <NavigationBar navigation={navigation} />
 
       <FlatList
         data={points}
@@ -91,22 +90,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
-    backgroundColor: '#333',
+    backgroundColor: '#EEEEEE',
     height: 60,
   },
   searchBar: {
     flex: 1,
-    height: 40,
-    backgroundColor: '#222',
+    height: 50,
+    backgroundColor: '#FFFFFF',
+    borderBlockColor: '#000000',
     borderRadius: 8,
     paddingHorizontal: 10,
-    color: 'white',
+    color: '#000',
   },
   dropdownContainer: {
     width: 150,
     marginLeft: 10,
   },
   dropdown: {
-    backgroundColor: '#222',
+    height: 50,
+    backgroundColor: '#FFFFFF',
   },
 });

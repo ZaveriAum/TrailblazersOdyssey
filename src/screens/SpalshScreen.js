@@ -4,7 +4,7 @@ import { View, Image, StyleSheet } from 'react-native';
 export default function SplashScreen({ navigation }) {
   useEffect(() => {
     setTimeout(() => {
-      navigation.replace('Home'); // Navigate to HomeScreen after 3 seconds
+      navigation.replace('Home');
     }, 3000);
   }, []);
 
