@@ -1,15 +1,57 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import NavigationBar from '../components/NavigationBar';
 import dropdown from "../../assets/drop-down.png"
+import eye from "../../assets/eye.png"
 export default function HomeScreen({ navigation }) {
   const [searchText, setSearchText] = useState('');
   const [points, setPoints] = useState([
-    { id: '1', name: 'Point 1', tags: ['Easy', 'Photo'], task: 'Task 1 Description' },
-    { id: '2', name: 'Point 2', tags: ['Hard', 'Info'], task: 'Task 2 Description' },
-    { id: '3', name: 'Point 3', tags: ['Medium', 'Photo'], task: 'Task 3 Description' },
+    {
+      id: "1",
+      name: "Point 1",
+      tags: [
+        { tagname: "Photo", tagColor: "#5C8FF6" },
+        { tagname: "Hiking", tagColor: "#F6B85C" },
+        { tagname: "Winter", tagColor: "#B35CF6" },
+        { tagname: "Rural", tagColor: "#F65CA4" },
+        
+      ],
+      task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
+      difficulty: 0,
+    },
+    {
+      id: "2",
+      name: "Point 2",
+      tags: [
+        { tagname: "Adventure", tagColor: "#F6A95C" },
+        { tagname: "Nature", tagColor: "#6CF65C" },
+        { tagname: "Beach", tagColor: "#F6F65C" },
+        { tagname: "Mountain", tagColor: "#8A5CF6" },
+        { tagname: "Urban", tagColor: "#F65C8A" }
+      ],
+      task: "Task 2 Description",
+      difficulty: 1,
+    },
+    {
+      id: "3",
+      name: "Point 3",
+      tags: [
+        { tagname: "Photo", tagColor: "#5C8FF6" },
+        { tagname: "Hiking", tagColor: "#F6B85C" },
+        { tagname: "Winter", tagColor: "#B35CF6" },
+        { tagname: "Rural", tagColor: "#F65CA4" },
+        { tagname: "Adventure", tagColor: "#F6A95C" },
+        { tagname: "Nature", tagColor: "#6CF65C" },
+        { tagname: "Beach", tagColor: "#F6F65C" },
+        { tagname: "Mountain", tagColor: "#8A5CF6" },
+        { tagname: "Urban", tagColor: "#F65C8A" }
+      ],
+      task: "Task 3 Description",
+      difficulty: 2,
+    },
   ]);
+  const difficulties = ["#50D890","#EEF65C","#F65C78"]
 
   const [dropdownOpen,setdropDownOpen] = useState(false) 
   const [dropdownValue, setDropdownValue] = useState(null);
@@ -28,16 +70,16 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <NavigationBar navigation={navigation} />
 
-      
+      <Text style={styles.pick}>Pick a Point!</Text>
       <FlatList
-      
         data={points}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.pointItem}>
-            <Text style={styles.pointName}>{item.name}</Text>
-            <Text style={styles.pointTags}>{item.tags.join(', ')}</Text>
-
+            <View style={{flexDirection:'row', alignItems:'center'}}>
+            <View style={[styles.dot, { backgroundColor: difficulties[item.difficulty] }]} />
+              <Text style={styles.pointName}>{item.name}</Text>
+              </View>
             <View style={styles.bottomRow}>
               <Text style={styles.pointTask}>{item.task}</Text>
 
@@ -63,9 +105,28 @@ export default function HomeScreen({ navigation }) {
               </TouchableOpacity>
             </View>
             {dropdownValue === item.id && (
-                  <View style={styles.pointDropDown}>
-                      
-                  </View>
+            <View style={styles.pointDropDown}>
+              <View style={styles.labels}>
+                <Text style={styles.tagTaskText}>Tags</Text>
+                <FlatList
+                  data={item.tags}
+                  keyExtractor={(tag, index) => index.toString()}
+                  renderItem={({ item }) => (
+                    <View style={[styles.tagItem, { backgroundColor: item.tagColor }]}>
+                      <Text style={styles.tagText}>{item.tagname}</Text>
+                    </View>
+                  )}
+                  numColumns={3} 
+                  columnWrapperStyle={styles.columnWrapper}  
+                />
+              </View>
+              <View style={styles.task}>
+                  <Text style={styles.tagTaskText}>Task</Text>
+                  <View style={styles.taskView}><Text>{item.task}</Text></View>
+              </View>
+              <TouchableOpacity onPress={() => handleNavigate(item.id)} style={styles.viewMore} ><Image source={eye} style={styles.eyeIcon}/><Text style={styles.buttonText}>View More</Text></TouchableOpacity>
+            </View>
+  
   )}
           </View>
           
@@ -81,21 +142,80 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1B2027',
   },
+  pick:{
+    fontSize:50,
+    color:"#EEE",
+    fontWeight:500,
+    textAlign:"center",
+    marginVertical:20
+  },
+  eyeIcon:{
+    width:25,
+    height:25,
+    marginRight:5
+  },
+  viewMore:{
+    backgroundColor:"#EEEEEE",
+    justifyContent:"center",
+    alignItems:"center",
+    marginBottom:30,
+    paddingVertical:10,
+    paddingHorizontal:5,
+    borderRadius:10,
+    margin:'auto',
+    flexDirection:"row"
+  },
   list: {
     flex: 1,
     paddingHorizontal: 10,
     marginTop: 10,
   },
+  tagItem: {
+    width: 100,
+    height: 40, 
+    textAlign: "center",
+    justifyContent: 'center', 
+    alignItems: 'center',  
+    paddingVertical:10,
+    borderRadius: 10,
+  },
+  tagTaskText:{
+    marginLeft:25,
+    color:"#aaa",
+    fontSize:16
+  },
+  taskView:{
+    marginHorizontal:25,
+    marginTop:15,
+    direction:"row",
+    backgroundColor:"#76ABAE",
+    padding:10,
+    borderRadius:10
+  },
   dropDownArrow:{
     width:20,
     height:30,
-    zIndex:1
+  },
+  labels:{
+    marginVertical:30
+  },
+  columnWrapper:{
+    justifyContent:"space-between",
+    marginHorizontal:20,
+    marginTop:20
+    
   },
   dropDownArrowUp:{
     width:20,
     height:30,
     zIndex:1,
     transform: [{ rotate: '180deg' }],
+  },
+  dot: {
+    width: 20, 
+    height: 20, 
+    borderRadius: 10,  
+    marginRight: 10,
   },
   pointItem: {
     padding: 15,
@@ -105,12 +225,13 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   pointDropDown:{
-    height:400,
-    backgroundColor:"#31363F",
-    borderTopWidth: 2,
+    borderRadius:25,
+    backgroundColor:"#1B2027",
     marginTop:10,
     flex:1,
-    borderTopColor: "#1B2027", 
+  },
+  tags:{
+    backgroundColor:"red"
   },
   pointName: {
     fontSize: 18,
@@ -155,6 +276,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  task:{
+    marginBottom:30,
+    
   },
   bottomBar: {
     flexDirection: 'row',
