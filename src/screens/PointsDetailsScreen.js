@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Share, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Share, View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, Button } from 'react-native';
 import NavigationBar from '../components/NavigationBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 export default function PointDetailScreen({ route, navigation }) {
@@ -7,6 +7,7 @@ export default function PointDetailScreen({ route, navigation }) {
 
   const [pointDetails, setPointDetails] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const points = [
@@ -23,6 +24,8 @@ export default function PointDetailScreen({ route, navigation }) {
         ],
         task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
         difficulty: 0,
+        rating: 5,
+        reviewer_count: 1,
       },
       {
         id: "2",
@@ -37,6 +40,8 @@ export default function PointDetailScreen({ route, navigation }) {
         ],
         task: "Task 2 Description",
         difficulty: 1,
+        rating: 5,
+        reviewer_count: 1,
       },
       {
         id: "3",
@@ -54,7 +59,9 @@ export default function PointDetailScreen({ route, navigation }) {
           { tagname: "Urban", tagColor: "#F65C8A" }
         ],
         task: "Task 3 Description",
-        difficulty: 7,
+        difficulty: 2,
+        rating: 5,
+        reviewer_count: 1,
       },
     ];
 
@@ -136,13 +143,6 @@ export default function PointDetailScreen({ route, navigation }) {
           <Text style={styles.detailTitle}>Address:</Text>
           <Text style={styles.detailValue}>{pointDetails.address}</Text>
         </View>
-
-        <TouchableOpacity style={styles.backButton} onPress={onShare}>
-          <Text style={styles.backButtonText}>Share</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backButtonText}>Locate</Text>
-        </TouchableOpacity>
       </ScrollView>
       <View style={styles.bottomNav}>
         <TouchableOpacity>
@@ -151,9 +151,39 @@ export default function PointDetailScreen({ route, navigation }) {
         <TouchableOpacity onPress={onShare}>
           <Icon name="send" size={35} color="#1E1E1E" />
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Icon name="star" size={35} color="#1E1E1E" />
-        </TouchableOpacity>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Icon name="close" size={20} color="#000" />
+            </TouchableOpacity>
+
+            <Text style={styles.modalText}>Rate Point</Text>
+            <View style={styles.rate_btns}>
+              {[...Array(5)].map((_, index) => (
+                <TouchableOpacity key={index} onPress={() => console.log(`Rated ${index + 1} stars`)}>
+                  <Icon name="star-o" size={30} color="#FFD700" />
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Button title="Rate" onPress={() => setModalVisible(false)} />
+          </View>
+          </View>
+        </Modal>
+
+          <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+            <Icon name="star" size={35} color="#1E1E1E" />
+          </TouchableOpacity>
       </View>
     </View>
   );
@@ -259,4 +289,62 @@ const styles = StyleSheet.create({
   borderTopWidth: 1,
   borderColor: '#333',
 },
+centeredView: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+modalView: {
+  margin: 20,
+  backgroundColor: 'white',
+  borderRadius: 20,
+  padding: 20,
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+  elevation: 5,
+  width: '80%',
+  maxHeight: '50%',
+  position: 'relative',
+},
+button: {
+  borderRadius: 20,
+  padding: 10,
+  elevation: 2,
+},
+buttonOpen: {
+  backgroundColor: '#F194FF',
+},
+buttonClose: {
+  backgroundColor: '#2196F3',
+},
+textStyle: {
+  color: 'white',
+  fontWeight: 'bold',
+  textAlign: 'center',
+},
+modalText: {
+  marginBottom: 15,
+  textAlign: 'center',
+},
+rate_btns: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginVertical: 10,
+  width: '100%',
+},
+cancelButton: {
+  position: 'absolute',
+  top: 10,
+  right: 10,
+  padding: 5,
+  zIndex: 10,
+},
+
 });
