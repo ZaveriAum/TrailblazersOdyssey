@@ -10,6 +10,7 @@ export default function HomeScreen({ navigation }) {
     {
       id: "1",
       name: "Point 1",
+      address: "150, Kendle avenue",
       tags: [
         { tagname: "Photo", tagColor: "#5C8FF6" },
         { tagname: "Hiking", tagColor: "#F6B85C" },
@@ -23,6 +24,7 @@ export default function HomeScreen({ navigation }) {
     {
       id: "2",
       name: "Point 2",
+      address: "160, Kendle avenue",
       tags: [
         { tagname: "Adventure", tagColor: "#F6A95C" },
         { tagname: "Nature", tagColor: "#6CF65C" },
@@ -36,6 +38,7 @@ export default function HomeScreen({ navigation }) {
     {
       id: "3",
       name: "Point 3",
+      address: "170, Kendle avenue",
       tags: [
         { tagname: "Photo", tagColor: "#5C8FF6" },
         { tagname: "Hiking", tagColor: "#F6B85C" },
