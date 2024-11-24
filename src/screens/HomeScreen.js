@@ -20,6 +20,8 @@ export default function HomeScreen({ navigation }) {
       ],
       task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
       difficulty: 0,
+      rating: 5,
+      reviewer_count: 1,
     },
     {
       id: "2",
@@ -34,6 +36,8 @@ export default function HomeScreen({ navigation }) {
       ],
       task: "Task 2 Description",
       difficulty: 1,
+      rating: 5,
+      reviewer_count: 1,
     },
     {
       id: "3",
@@ -52,6 +56,8 @@ export default function HomeScreen({ navigation }) {
       ],
       task: "Task 3 Description",
       difficulty: 2,
+      rating: 5,
+      reviewer_count: 1,
     },
   ]);
   const difficulties = ["#50D890","#EEF65C","#F65C78"]
