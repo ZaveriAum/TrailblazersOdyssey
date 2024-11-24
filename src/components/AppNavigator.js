@@ -9,6 +9,8 @@ import PointDetailScreen from '../screens/PointsDetailsScreen';
 import TeamScreen from '../screens/TeamScreen';
 import EditMemberScreen from  '../screens/EditMemberScreen';
 import ContactMemberScreen from  '../screens/ContactMemberScreen';
+import CreatePointScreen from '../screens/CreatePointScreen';
+import EditPointScreen  from '../screens/EditPointScreen';
 
 
 const Stack = createStackNavigator();
@@ -25,6 +27,8 @@ export default function AppNavigator() {
             <Stack.Screen name="PointDetailScreen" component={PointDetailScreen} />
             <Stack.Screen name="EditMember" component={EditMemberScreen} />
             <Stack.Screen name="ContactMember" component={ContactMemberScreen} />
+            <Stack.Screen name="CreatePoint" component={CreatePointScreen} />
+            <Stack.Screen name="EditPoint" component={EditPointScreen}/>
 
         </Stack.Navigator>
         </NavigationContainer>
