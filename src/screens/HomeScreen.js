@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import NavigationBar from '../components/NavigationBar';
-
+import dropdown from "../../assets/drop-down.png"
 export default function HomeScreen({ navigation }) {
   const [searchText, setSearchText] = useState('');
   const [points, setPoints] = useState([
@@ -11,7 +11,7 @@ export default function HomeScreen({ navigation }) {
     { id: '3', name: 'Point 3', tags: ['Medium', 'Photo'], task: 'Task 3 Description' },
   ]);
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen,setdropDownOpen] = useState(false) 
   const [dropdownValue, setDropdownValue] = useState(null);
   const [dropdownItems, setDropdownItems] = useState([
     { label: 'Easy', value: 'easy' },
@@ -28,7 +28,9 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <NavigationBar navigation={navigation} />
 
+      
       <FlatList
+      
         data={points}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -41,37 +43,35 @@ export default function HomeScreen({ navigation }) {
 
               <TouchableOpacity
                 style={styles.infoButton}
-                onPress={() => handleNavigate(item.id)}
+                onPress={() => {
+
+                  if(dropdownOpen && dropdownValue == item.id){
+                    setdropDownOpen(false)
+                    setDropdownValue(null)
+                    console.log("closed dropdown")
+                    console.log(dropdownValue,dropdownOpen)
+                  }
+                  else{
+                    setdropDownOpen(true);
+                    setDropdownValue(item.id)
+                    console.log("Opened Dropdown")
+                    console.log(dropdownValue,dropdownOpen)
+                  }
+                 }}
               >
-                <Text style={styles.infoText}>i</Text>
+                <Image style={dropdownValue == item.id ?styles.dropDownArrowUp:styles.dropDownArrow} source={dropdown}/>
               </TouchableOpacity>
             </View>
+            {dropdownValue === item.id && (
+                  <View style={styles.pointDropDown}>
+                      
+                  </View>
+  )}
           </View>
+          
         )}
         style={styles.list}
       />
-
-      <View style={styles.bottomBar}>
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search Points..."
-          placeholderTextColor="#888"
-          value={searchText}
-          onChangeText={(text) => setSearchText(text)}
-        />
-
-        <DropDownPicker
-          open={dropdownOpen}
-          value={dropdownValue}
-          items={dropdownItems}
-          setOpen={setDropdownOpen}
-          setValue={setDropdownValue}
-          setItems={setDropdownItems}
-          placeholder="Filter by Tag"
-          containerStyle={styles.dropdownContainer}
-          style={styles.dropdown}
-        />
-      </View>
     </View>
   );
 }
@@ -79,19 +79,38 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#1B2027',
   },
   list: {
     flex: 1,
     paddingHorizontal: 10,
     marginTop: 10,
   },
+  dropDownArrow:{
+    width:20,
+    height:30,
+    zIndex:1
+  },
+  dropDownArrowUp:{
+    width:20,
+    height:30,
+    zIndex:1,
+    transform: [{ rotate: '180deg' }],
+  },
   pointItem: {
     padding: 15,
     marginBottom: 10,
-    backgroundColor: '#222',
+    backgroundColor: '#31363F',
     borderRadius: 8,
     elevation: 3,
+  },
+  pointDropDown:{
+    height:400,
+    backgroundColor:"#31363F",
+    borderTopWidth: 2,
+    marginTop:10,
+    flex:1,
+    borderTopColor: "#1B2027", 
   },
   pointName: {
     fontSize: 18,
@@ -106,6 +125,7 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     width: '40%',
     marginTop: 10,
+    
   },
   dropdown: {
     height: 40,
@@ -124,10 +144,11 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   infoButton: {
-    backgroundColor: '#555',
+    backgroundColor: '#1B2027',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
+
     marginLeft: 10,
   },
   infoText: {
