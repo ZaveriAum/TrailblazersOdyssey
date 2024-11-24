@@ -32,7 +32,7 @@ export default function AboutScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212",
+    backgroundColor: "#1B2027",
   },
   contentContainer: {
     flexGrow: 1,
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   box: {
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#31363F",
     padding: 15,
     borderRadius: 10,
     marginBottom: 15,

@@ -83,7 +83,7 @@ export default function ContactMemberScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212",
+    backgroundColor: "#1B2027",
   },
   contentContainer: {
     flexGrow: 1,
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   input: {
-    backgroundColor: "#333",
+    backgroundColor: "#31363F",
     color: "#FFF",
     width: "100%",
     padding: 10,
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF", 
   },
   button: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#50D890",
     paddingVertical: 15,
     paddingHorizontal: 25,
     borderRadius: 10,
@@ -155,7 +155,6 @@ const styles = StyleSheet.create({
     alignItems: "center", 
   },
   buttonText: {
-    color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
   },

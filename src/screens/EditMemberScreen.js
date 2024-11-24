@@ -40,7 +40,7 @@ export default function AboutScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: "#121212",
+      backgroundColor: "#1B2027",
     },
     contentContainer: {
       flexGrow: 1,
@@ -56,20 +56,19 @@ const styles = StyleSheet.create({
       textAlign: "center",
     },
     addButton: {
-      backgroundColor: "#28a745",
+      backgroundColor: "#50D890",
       paddingVertical: 10,
       paddingHorizontal: 20,
       borderRadius: 10,
       marginBottom: 30,
-      alignSelf: 'flex-start', // Makes button width fit its content
+      alignSelf: 'center', 
     },
     addButtonText: {
-      color: "#FFF",
       fontSize: 16,
       fontWeight: "bold",
     },
     box: {
-      backgroundColor: "#1E1E1E",
+      backgroundColor: "#31363F",
       padding: 15,
       borderRadius: 10,
       marginBottom: 15,
