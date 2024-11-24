@@ -8,6 +8,7 @@ export default function PointDetailScreen({ route, navigation }) {
   const [pointDetails, setPointDetails] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     const points = [
@@ -25,7 +26,6 @@ export default function PointDetailScreen({ route, navigation }) {
         task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
         difficulty: 0,
         rating: 5,
-        reviewer_count: 1,
       },
       {
         id: "2",
@@ -41,7 +41,6 @@ export default function PointDetailScreen({ route, navigation }) {
         task: "Task 2 Description",
         difficulty: 1,
         rating: 5,
-        reviewer_count: 1,
       },
       {
         id: "3",
@@ -61,7 +60,6 @@ export default function PointDetailScreen({ route, navigation }) {
         task: "Task 3 Description",
         difficulty: 2,
         rating: 5,
-        reviewer_count: 1,
       },
     ];
 
@@ -107,6 +105,15 @@ export default function PointDetailScreen({ route, navigation }) {
     }
   }
 
+  const selectRating = (rating)=>{
+    setRating(rating);
+  }
+
+  const rate = ()=>{
+    setModalVisible(!modalVisible)
+    pointDetails.rating = (pointDetails.rating + rating)/2
+    console.log(pointDetails.rating)
+  }
   return (
     <View style={styles.container}>
       <NavigationBar navigation={navigation} />
@@ -132,6 +139,11 @@ export default function PointDetailScreen({ route, navigation }) {
               {tag.tagname}
             </Text>
           ))}
+        </View>
+
+        <View style={styles.detailCard}>
+          <Text style={styles.detailTitle}>Rating:</Text>
+          <Text style={styles.detailValue}>{pointDetails.rating}</Text>
         </View>
 
         <View style={styles.detailCard}>
@@ -170,13 +182,23 @@ export default function PointDetailScreen({ route, navigation }) {
 
             <Text style={styles.modalText}>Rate Point</Text>
             <View style={styles.rate_btns}>
-              {[...Array(5)].map((_, index) => (
-                <TouchableOpacity key={index} onPress={() => console.log(`Rated ${index + 1} stars`)}>
+                <TouchableOpacity onPress={()=>selectRating(1)}>
                   <Icon name="star-o" size={30} color="#FFD700" />
                 </TouchableOpacity>
-              ))}
+                <TouchableOpacity onPress={()=>selectRating(2)}>
+                  <Icon name="star-o" size={30} color="#FFD700" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>selectRating(3)}>
+                  <Icon name="star-o" size={30} color="#FFD700" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>selectRating(4)}>
+                  <Icon name="star-o" size={30} color="#FFD700" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>selectRating(5)}>
+                  <Icon name="star-o" size={30} color="#FFD700" />
+                </TouchableOpacity>
             </View>
-            <Button title="Rate" onPress={() => setModalVisible(false)} />
+            <Button title="Rate" onPress={rate} />
           </View>
           </View>
         </Modal>
