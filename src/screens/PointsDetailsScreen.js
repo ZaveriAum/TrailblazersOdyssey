@@ -1,24 +1,76 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Share, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import NavigationBar from '../components/NavigationBar';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 export default function PointDetailScreen({ route, navigation }) {
   const { pointId } = route.params;
 
   const [pointDetails, setPointDetails] = useState(null);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
 
   useEffect(() => {
     const points = [
-      { id: '1', name: 'Point 1', tags: ['Easy', 'Photo'], task: 'Task 1 Description', details: 'This is a detailed description for Point 1.' },
-      { id: '2', name: 'Point 2', tags: ['Hard', 'Info'], task: 'Task 2 Description', details: 'This is a detailed description for Point 2.' },
-      { id: '3', name: 'Point 3', tags: ['Medium', 'Photo'], task: 'Task 3 Description', details: 'This is a detailed description for Point 3.' },
+      {
+        id: "1",
+        name: "Point 1",
+        address: "150, Kendle avenue",
+        tags: [
+          { tagname: "Photo", tagColor: "#5C8FF6" },
+          { tagname: "Hiking", tagColor: "#F6B85C" },
+          { tagname: "Winter", tagColor: "#B35CF6" },
+          { tagname: "Rural", tagColor: "#F65CA4" },
+          
+        ],
+        task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
+        difficulty: 0,
+      },
+      {
+        id: "2",
+        name: "Point 2",
+        address: "160, Kendle avenue",
+        tags: [
+          { tagname: "Adventure", tagColor: "#F6A95C" },
+          { tagname: "Nature", tagColor: "#6CF65C" },
+          { tagname: "Beach", tagColor: "#F6F65C" },
+          { tagname: "Mountain", tagColor: "#8A5CF6" },
+          { tagname: "Urban", tagColor: "#F65C8A" }
+        ],
+        task: "Task 2 Description",
+        difficulty: 1,
+      },
+      {
+        id: "3",
+        name: "Point 3",
+        address: "170, Kendle avenue",
+        tags: [
+          { tagname: "Photo", tagColor: "#5C8FF6" },
+          { tagname: "Hiking", tagColor: "#F6B85C" },
+          { tagname: "Winter", tagColor: "#B35CF6" },
+          { tagname: "Rural", tagColor: "#F65CA4" },
+          { tagname: "Adventure", tagColor: "#F6A95C" },
+          { tagname: "Nature", tagColor: "#6CF65C" },
+          { tagname: "Beach", tagColor: "#F6F65C" },
+          { tagname: "Mountain", tagColor: "#8A5CF6" },
+          { tagname: "Urban", tagColor: "#F65C8A" }
+        ],
+        task: "Task 3 Description",
+        difficulty: 7,
+      },
     ];
 
     const point = points.find((p) => p.id === pointId);
-    if (point) {
-      setPointDetails(point);
-    }
+    if (point) setPointDetails(point);
   }, [pointId]);
+
+  const getDifficultyColor = (difficulty) => {
+    const greenToRed = ['#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722', '#F44336'];
+    return greenToRed[Math.min(difficulty, greenToRed.length - 1)];
+  };
+
+  const toggleTooltip = () => {
+    setTooltipVisible(true);
+    setTimeout(() => setTooltipVisible(false), 2000);
+  };
 
   if (!pointDetails) {
     return (
@@ -28,26 +80,81 @@ export default function PointDetailScreen({ route, navigation }) {
     );
   }
 
+  const onShare = async ()=>{
+    try {
+      const result = await Share.share({
+        message:
+          `${pointDetails.name} 
+          Task: ${pointDetails.task}
+          Address: ${pointDetails.address}
+          `,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+        } else {
+        }
+      } else if (result.action === Share.dismissedAction) {
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
   return (
     <View style={styles.container}>
+      <NavigationBar navigation={navigation} />
+      <ScrollView contentContainerStyle={styles.body}>
 
-    <NavigationBar navigation={navigation} />
+        <View style={styles.nameContainer}>
+          <Text style={styles.pointName}>{pointDetails.name}</Text>
+          <TouchableOpacity
+            style={[styles.difficultyDot, { backgroundColor: getDifficultyColor(pointDetails.difficulty) }]}
+            onPress={toggleTooltip}
+          />
+        </View>
 
-      <Text style={styles.title}>{pointDetails.name}</Text>
-      <Text style={styles.details}>{pointDetails.details}</Text>
-      
-      <Text style={styles.subTitle}>Tags:</Text>
-      <Text style={styles.text}>{pointDetails.tags.join(', ')}</Text>
-      
-      <Text style={styles.subTitle}>Task:</Text>
-      <Text style={styles.text}>{pointDetails.task}</Text>
+        {tooltipVisible && (
+          <View style={styles.tooltip}>
+            <Text style={styles.tooltipText}>Difficulty: {pointDetails.difficulty}</Text>
+          </View>
+        )}
 
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.backButtonText}>Back</Text>
-      </TouchableOpacity>
+        <View style={styles.tagsContainer}>
+          {pointDetails.tags.map((tag, index) => (
+            <Text key={index} style={[styles.tag, { backgroundColor: tag.tagColor }]}>
+              {tag.tagname}
+            </Text>
+          ))}
+        </View>
+
+        <View style={styles.detailCard}>
+          <Text style={styles.detailTitle}>Task:</Text>
+          <Text style={styles.detailValue}>{pointDetails.task}</Text>
+        </View>
+
+        <View style={styles.detailCard}>
+          <Text style={styles.detailTitle}>Address:</Text>
+          <Text style={styles.detailValue}>{pointDetails.address}</Text>
+        </View>
+
+        <TouchableOpacity style={styles.backButton} onPress={onShare}>
+          <Text style={styles.backButtonText}>Share</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Text style={styles.backButtonText}>Locate</Text>
+        </TouchableOpacity>
+      </ScrollView>
+      <View style={styles.bottomNav}>
+        <TouchableOpacity>
+          <Icon name="map-marker" size={35} color="#1E1E1E" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onShare}>
+          <Icon name="send" size={35} color="#1E1E1E" />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Icon name="star" size={35} color="#1E1E1E" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -55,40 +162,101 @@ export default function PointDetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#1B2027',
   },
-  title: {
-    fontSize: 24,
+  body: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  headerTitle: {
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 10,
+    marginBottom: 15,
+    textAlign: 'center',
   },
-  details: {
-    fontSize: 16,
-    color: '#bbb',
+  nameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 20,
   },
-  subTitle: {
-    fontSize: 18,
+  pointName: {
+    fontSize: 40,
+    color: '#fff',
+    fontWeight: '600',
+    marginRight: 10,
+  },
+  difficultyDot: {
+    width: 15,
+    height: 15,
+    borderRadius: 7.5,
+    borderWidth: 1,
+    borderColor: '#fff',
+  },
+  tooltip: {
+    position: 'absolute',
+    top: 20,
+    left: 240,
+    padding: 10,
+    backgroundColor: '#444',
+    borderRadius: 8,
+    elevation: 5,
+  },
+  tooltipText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 15,
+  },
+  tag: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+    marginRight: 8,
+    marginBottom: 8,
+    fontSize: 14,
+    color: '#fff',
+  },
+  detailCard: {
+    marginBottom: 15,
+    padding: 10,
+    backgroundColor: '#222',
+    borderRadius: 10,
+    alignSelf: 'flex-start',
+  },
+  detailTitle: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
-    marginTop: 20,
+    marginBottom: 5,
   },
-  text: {
-    fontSize: 16,
-    color: '#bbb',
-    marginTop: 5,
+  detailValue: {
+    fontSize: 14,
+    color: '#ccc',
+    textAlign: 'left',
   },
   backButton: {
-    marginTop: 30,
+    marginTop: 20,
+    alignSelf: 'center',
     paddingVertical: 12,
     paddingHorizontal: 30,
     backgroundColor: '#555',
     borderRadius: 8,
-    alignSelf: 'center',
   },
   backButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#fff',
   },
+  bottomNav: {
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  backgroundColor: '#EEE',
+  paddingVertical: 10,
+  borderTopWidth: 1,
+  borderColor: '#333',
+},
 });
