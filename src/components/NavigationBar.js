@@ -31,7 +31,7 @@ export default function NavigationBar({ navigation }) {
 
       <Text style={styles.navBarTitle}>Trailblazers Odyssey</Text>
 
-      <Image source={require('../../assets/icon.png')} style={styles.logo} />
+      <Image source={require('../../assets/icon-white.png')} style={styles.logo} />
 
       {dropdownVisible && buttonPosition && (
         <Modal
@@ -51,11 +51,11 @@ export default function NavigationBar({ navigation }) {
                   },
                 ]}
               >
+                <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('Splash Screen')}>
+                  <Text style={styles.dropdownText}>Teams</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('Home')}>
                   <Text style={styles.dropdownText}>Points</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('Teams')}>
-                  <Text style={styles.dropdownText}>Teams</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('About')}>
                   <Text style={styles.dropdownText}>About</Text>
@@ -87,8 +87,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   logo: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
     resizeMode: 'contain',
   },
   modalBackground: {
