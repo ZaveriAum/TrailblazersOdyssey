@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Share, View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, Button } from 'react-native';
 import NavigationBar from '../components/NavigationBar';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function PointDetailScreen({ route, navigation }) {
   const { pointId } = route.params;
@@ -106,19 +107,35 @@ export default function PointDetailScreen({ route, navigation }) {
     pointDetails.rating = (pointDetails.rating + rating)/2
     console.log(pointDetails.rating)
   }
+
+  const toggleTooltip = () => {
+    setTooltipVisible(true);
+    setTimeout(() => setTooltipVisible(false), 2000);
+  };
+
+  const getDifficultyColor = (difficulty) => {
+    const greenToRed = ['#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722', '#F44336'];
+    return greenToRed[Math.min(difficulty, greenToRed.length - 1)];
+  };
+
   return (
     <View style={styles.container}>
 
     <NavigationBar navigation={navigation} />
     <ScrollView contentContainerStyle={styles.body}>
-      <Text style={styles.title}>{pointDetails.name}</Text>
-      <Text style={styles.details}>{pointDetails.details}</Text>
-      
-      <Text style={styles.subTitle}>Tags:</Text>
-      <Text style={styles.text}>{pointDetails.tags.join(', ')}</Text>
-      
-      <Text style={styles.subTitle}>Task:</Text>
-      <Text style={styles.text}>{pointDetails.task}</Text>
+    <View style={styles.nameContainer}>
+          <Text style={styles.pointName}>{pointDetails.name}</Text>
+          <TouchableOpacity
+            style={[styles.difficultyDot, { backgroundColor: getDifficultyColor(pointDetails.difficulty) }]}
+            onPress={toggleTooltip}
+          />
+        </View>
+
+        {tooltipVisible && (
+          <View style={styles.tooltip}>
+            <Text style={styles.tooltipText}>Difficulty: {pointDetails.difficulty}</Text>
+          </View>
+        )}
 
         <View style={styles.tagsContainer}>
           {pointDetails.tags.map((tag, index) => (
@@ -127,7 +144,6 @@ export default function PointDetailScreen({ route, navigation }) {
             </Text>
           ))}
         </View>
-
         <View style={styles.detailCard}>
           <Text style={styles.detailTitle}>Rating:</Text>
           <Text style={styles.detailValue}>{pointDetails.rating}</Text>
@@ -201,39 +217,93 @@ export default function PointDetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#1B2027',
   },
-  title: {
-    fontSize: 24,
+  body: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  headerTitle: {
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 10,
+    marginBottom: 15,
+    textAlign: 'center',
   },
-  details: {
-    fontSize: 16,
-    color: '#bbb',
+  nameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 20,
   },
-  subTitle: {
-    fontSize: 18,
+  pointName: {
+    fontSize: 40,
+    color: '#fff',
+    fontWeight: '600',
+    marginRight: 10,
+  },
+  difficultyDot: {
+    width: 15,
+    height: 15,
+    borderRadius: 7.5,
+    borderWidth: 1,
+    borderColor: '#fff',
+  },
+  tooltip: {
+    position: 'absolute',
+    top: 20,
+    left: 240,
+    padding: 10,
+    backgroundColor: '#444',
+    borderRadius: 8,
+    elevation: 5,
+  },
+  tooltipText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 15,
+  },
+  tag: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+    marginRight: 8,
+    marginBottom: 8,
+    fontSize: 14,
+    color: '#fff',
+  },
+  detailCard: {
+    marginBottom: 15,
+    padding: 10,
+    backgroundColor: '#222',
+    borderRadius: 10,
+    alignSelf: 'flex-start',
+  },
+  detailTitle: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
-    marginTop: 20,
+    marginBottom: 5,
   },
-  text: {
-    fontSize: 16,
-    color: '#bbb',
-    marginTop: 5,
+  detailValue: {
+    fontSize: 14,
+    color: '#ccc',
+    textAlign: 'left',
   },
   backButton: {
-    marginTop: 30,
+    marginTop: 20,
+    alignSelf: 'center',
     paddingVertical: 12,
     paddingHorizontal: 30,
+    backgroundColor: '#555',
     borderRadius: 8,
-    alignSelf: 'center',
   },
   backButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#fff',
   },
   bottomNav: {
