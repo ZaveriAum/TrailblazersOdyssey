@@ -1,153 +1,188 @@
 import React, { useState, useEffect } from 'react';
-import { Share, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import NavigationBar from '../components/NavigationBar';
-export default function PointDetailScreen({ route, navigation }) {
-  const { pointId } = route.params;
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Picker,
+} from 'react-native';
 
-  const [pointDetails, setPointDetails] = useState(null);
-  const [tooltipVisible, setTooltipVisible] = useState(false);
+export default function EditPointScreen({ points, setPoints }) {
+  const [selectedPoint, setSelectedPoint] = useState(null);
+  const [pointName, setPointName] = useState('');
+  const [pointTask, setPointTask] = useState('');
+  const [pointAddress, setPointAddress] = useState('');
+  const [tags, setTags] = useState([]);
+  const [tagName, setTagName] = useState('');
+  const [tagColor, setTagColor] = useState('');
 
+  // Debugging: Check if points are being passed
   useEffect(() => {
-    const points = [
-      {
-        id: "1",
-        name: "Point 1",
-        address: "150, Kendle avenue",
-        tags: [
-          { tagname: "Photo", tagColor: "#5C8FF6" },
-          { tagname: "Hiking", tagColor: "#F6B85C" },
-          { tagname: "Winter", tagColor: "#B35CF6" },
-          { tagname: "Rural", tagColor: "#F65CA4" },
-          
-        ],
-        task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
-        difficulty: 0,
-      },
-      {
-        id: "2",
-        name: "Point 2",
-        address: "160, Kendle avenue",
-        tags: [
-          { tagname: "Adventure", tagColor: "#F6A95C" },
-          { tagname: "Nature", tagColor: "#6CF65C" },
-          { tagname: "Beach", tagColor: "#F6F65C" },
-          { tagname: "Mountain", tagColor: "#8A5CF6" },
-          { tagname: "Urban", tagColor: "#F65C8A" }
-        ],
-        task: "Task 2 Description",
-        difficulty: 1,
-      },
-      {
-        id: "3",
-        name: "Point 3",
-        address: "170, Kendle avenue",
-        tags: [
-          { tagname: "Photo", tagColor: "#5C8FF6" },
-          { tagname: "Hiking", tagColor: "#F6B85C" },
-          { tagname: "Winter", tagColor: "#B35CF6" },
-          { tagname: "Rural", tagColor: "#F65CA4" },
-          { tagname: "Adventure", tagColor: "#F6A95C" },
-          { tagname: "Nature", tagColor: "#6CF65C" },
-          { tagname: "Beach", tagColor: "#F6F65C" },
-          { tagname: "Mountain", tagColor: "#8A5CF6" },
-          { tagname: "Urban", tagColor: "#F65C8A" }
-        ],
-        task: "Task 3 Description",
-        difficulty: 7,
-      },
-    ];
+    console.log('Points available:', points);
+  }, [points]);
 
-    const point = points.find((p) => p.id === pointId);
-    if (point) setPointDetails(point);
-  }, [pointId]);
-
-  // Get color based on difficulty
-  const getDifficultyColor = (difficulty) => {
-    const greenToRed = ['#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722', '#F44336'];
-    return greenToRed[Math.min(difficulty, greenToRed.length - 1)];
-  };
-
-  // Toggle Tooltip
-  const toggleTooltip = () => {
-    setTooltipVisible(true);
-    setTimeout(() => setTooltipVisible(false), 2000); // Hide after 2 seconds
-  };
-
-  if (!pointDetails) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    );
-  }
-
-  const onShare = async ()=>{
-    try {
-      const result = await Share.share({
-        message:
-          `${pointDetails.name} 
-          Task: ${pointDetails.task}
-          Address: ${pointDetails.address}
-          `,
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error) {
-      alert(error.message);
+  const handleSelectPoint = (pointId) => {
+    if (!pointId) {
+      setSelectedPoint(null);
+      setPointName('');
+      setPointTask('');
+      setPointAddress('');
+      setTags([]);
+      return;
     }
-  }
+
+    const point = points.find((p) => p.id === parseInt(pointId));
+    if (point) {
+      setSelectedPoint(point);
+      setPointName(point.name);
+      setPointTask(point.task);
+      setPointAddress(point.address);
+      setTags(point.tags);
+    }
+  };
+
+  const addTag = () => {
+    if (tagName && tagColor) {
+      setTags([...tags, { name: tagName, color: tagColor }]);
+      setTagName('');
+      setTagColor('');
+    }
+  };
+
+  const removeTag = (index) => {
+    setTags(tags.filter((_, i) => i !== index));
+  };
+
+  const savePoint = () => {
+    if (!pointName || !pointTask || !pointAddress) {
+      alert('Please fill out all fields!');
+      return;
+    }
+
+    const updatedPoints = points.map((point) =>
+      point.id === selectedPoint.id
+        ? { ...point, name: pointName, task: pointTask, address: pointAddress, tags: tags }
+        : point
+    );
+
+    setPoints(updatedPoints);
+    alert('Point updated successfully!');
+  };
+
+  const deletePoint = () => {
+    if (selectedPoint) {
+      setPoints(points.filter((point) => point.id !== selectedPoint.id));
+      setSelectedPoint(null);
+      setPointName('');
+      setPointTask('');
+      setPointAddress('');
+      setTags([]);
+      alert('Point deleted successfully!');
+    } else {
+      alert('No point selected to delete.');
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <NavigationBar navigation={navigation} />
-      <ScrollView contentContainerStyle={styles.body}>
+      <Text style={styles.header}>Edit or Delete a Point!</Text>
 
-        <View style={styles.nameContainer}>
-          <Text style={styles.pointName}>{pointDetails.name}</Text>
-          <TouchableOpacity
-            style={[styles.difficultyDot, { backgroundColor: getDifficultyColor(pointDetails.difficulty) }]}
-            onPress={toggleTooltip}
-          />
-        </View>
+      {points.length === 0 ? (
+        <Text style={styles.noPointsText}>No points available. Please add a point first!</Text>
+      ) : (
+        <>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Select a Point:</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={selectedPoint ? selectedPoint.id.toString() : ''}
+                  onValueChange={(value) => handleSelectPoint(value)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select a Point" value="" />
+                  {points.map((point) => (
+                    <Picker.Item key={point.id} label={point.name} value={point.id.toString()} />
+                  ))}
+                </Picker>
+              </View>
 
-        {tooltipVisible && (
-          <View style={styles.tooltip}>
-            <Text style={styles.tooltipText}>Difficulty: {pointDetails.difficulty}</Text>
-          </View>
-        )}
+              {selectedPoint && (
+                <>
+                  <Text style={styles.label}>Point Name:</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Edit point name"
+                    value={pointName}
+                    onChangeText={setPointName}
+                  />
 
-        <View style={styles.tagsContainer}>
-          {pointDetails.tags.map((tag, index) => (
-            <Text key={index} style={[styles.tag, { backgroundColor: tag.tagColor }]}>
-              {tag.tagname}
-            </Text>
-          ))}
-        </View>
+                  <Text style={styles.label}>Point Task:</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Edit point task"
+                    value={pointTask}
+                    onChangeText={setPointTask}
+                  />
 
-        <View style={styles.detailCard}>
-          <Text style={styles.detailTitle}>Task:</Text>
-          <Text style={styles.detailValue}>{pointDetails.task}</Text>
-        </View>
+                  <Text style={styles.label}>Point Address:</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Edit point address"
+                    value={pointAddress}
+                    onChangeText={setPointAddress}
+                  />
 
-        <View style={styles.detailCard}>
-          <Text style={styles.detailTitle}>Address:</Text>
-          <Text style={styles.detailValue}>{pointDetails.address}</Text>
-        </View>
+                  <Text style={styles.label}>Add Tags:</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter tag name"
+                    value={tagName}
+                    onChangeText={setTagName}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter tag background color"
+                    value={tagColor}
+                    onChangeText={setTagColor}
+                  />
+                  <TouchableOpacity style={styles.addButton} onPress={addTag}>
+                    <Text style={styles.addButtonText}>Add Tag</Text>
+                  </TouchableOpacity>
 
-        <TouchableOpacity style={styles.backButton} onPress={onShare}>
-          <Text style={styles.backButtonText}>Share</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backButtonText}>Locate</Text>
-        </TouchableOpacity>
-      </ScrollView>
+                  <Text style={styles.label}>Current Tags:</Text>
+                  <View style={styles.tagsContainer}>
+                    {tags.map((tag, index) => (
+                      <View
+                        key={index}
+                        style={[styles.tag, { backgroundColor: tag.color || '#EEE' }]}
+                      >
+                        <Text style={styles.tagText}>{tag.name}</Text>
+                        <TouchableOpacity onPress={() => removeTag(index)}>
+                          <Text style={styles.tagRemove}>✖</Text>
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                  </View>
+                </>
+              )}
+            </View>
+          </ScrollView>
+
+          {selectedPoint && (
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.saveButton} onPress={savePoint}>
+                <Text style={styles.saveButtonText}>Save Changes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.deleteButton} onPress={deletePoint}>
+                <Text style={styles.deleteButtonText}>Delete Point</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </>
+      )}
     </View>
   );
 }
@@ -155,101 +190,123 @@ export default function PointDetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1B2027',
+    backgroundColor: '#1E1E1E',
   },
-  body: {
-    flex: 1,
-    alignItems: 'center',
+  scrollContainer: {
+    flexGrow: 1,
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingBottom: 80,
   },
-  headerTitle: {
+  header: {
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 15,
+    color: '#FFFFFF',
     textAlign: 'center',
+    marginVertical: 20,
   },
-  nameContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
+  noPointsText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginTop: 50,
   },
-  pointName: {
-    fontSize: 40,
-    color: '#fff',
-    fontWeight: '600',
-    marginRight: 10,
+  inputContainer: {
+    backgroundColor: '#2A2A2A',
+    padding: 20,
+    borderRadius: 10,
+    width: '100%',
+    maxWidth: 700,
   },
-  difficultyDot: {
-    width: 15,
-    height: 15,
-    borderRadius: 7.5,
-    borderWidth: 1,
-    borderColor: '#fff',
+  label: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginVertical: 8,
   },
-  tooltip: {
-    position: 'absolute',
-    top: 20,
-    left: 240,
-    padding: 10,
-    backgroundColor: '#444',
+  pickerContainer: {
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    elevation: 5,
+    marginBottom: 10,
   },
-  tooltipText: {
-    color: '#fff',
-    fontSize: 14,
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+  input: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginBottom: 10,
+    width: '100%',
+    fontSize: 16,
+  },
+  addButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  addButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 15,
+    justifyContent: 'center',
+    marginVertical: 15,
+    width: '100%',
   },
   tag: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 15,
-    marginRight: 8,
-    marginBottom: 8,
-    fontSize: 14,
-    color: '#fff',
-  },
-  detailCard: {
-    marginBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
-    backgroundColor: '#222',
-    borderRadius: 10,
-    alignSelf: 'flex-start', // Align content to the left
+    borderRadius: 5,
+    margin: 5,
   },
-  detailTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 5,
-  },
-  detailValue: {
+  tagText: {
+    color: '#FFFFFF',
+    marginRight: 8,
     fontSize: 14,
-    color: '#ccc',
-    textAlign: 'left', // Align text to the left
   },
-  backButton: {
-    marginTop: 20,
-    alignSelf: 'center',
+  tagRemove: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 15,
+    backgroundColor: '#2A2A2A',
+  },
+  saveButton: {
+    backgroundColor: '#4CAF50',
     paddingVertical: 12,
     paddingHorizontal: 30,
-    backgroundColor: '#555',
     borderRadius: 8,
+    alignItems: 'center',
+    width: '45%',
   },
-  backButtonText: {
+  saveButtonText: {
+    color: '#FFFFFF',
     fontSize: 16,
-    color: '#fff',
+    fontWeight: 'bold',
   },
-  bottomNav: {
-  flexDirection: 'row',
-  justifyContent: 'space-around',
-  backgroundColor: '#EEE',
-  paddingVertical: 10,
-  borderTopWidth: 1,
-  borderColor: '#333',
-},
+  deleteButton: {
+    backgroundColor: '#E74C3C',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: '45%',
+  },
+  deleteButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });

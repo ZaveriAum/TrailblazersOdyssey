@@ -52,7 +52,7 @@ export default function NavigationBar({ navigation }) {
                 ]}
               >
                 <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('Home')}>
-                  <Text style={styles.dropdownText}>Points</Text>
+                  <Text style={styles.dropdownText}>Home</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('Team')}>
                   <Text style={styles.dropdownText}>Team</Text>
@@ -65,6 +65,12 @@ export default function NavigationBar({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('About')}>
                   <Text style={styles.dropdownText}>About</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('CreatePoint')}>
+                  <Text style={styles.dropdownText}>Create Point</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('EditPoint')}>
+                  <Text style={styles.dropdownText}>Edit Point</Text>
                 </TouchableOpacity>
               </View>
             </View>
