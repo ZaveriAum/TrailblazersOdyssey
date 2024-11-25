@@ -6,14 +6,9 @@ export default function AddTeamMemberScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
-  const handleAddMember = () => {
-    // Handle adding the team member logic here
-    console.log("Adding member with:", email, phone);
-  };
-
   return (
     <View style={styles.container}>
-      <NavigationBar/>
+      <NavigationBar navigation={navigation} />
       <View style={styles.form}>
         <Text style={styles.header}>Add Member</Text>
         
@@ -41,7 +36,7 @@ export default function AddTeamMemberScreen({ navigation }) {
           />
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleAddMember}>
+        <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Add Member</Text>
         </TouchableOpacity>
       </View>
