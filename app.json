@@ -12,7 +12,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#1B2027"
     },
-    "permission":["LOCATION"],
     "ios": {
       "supportsTablet": true
     },
@@ -24,6 +23,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "permission":["LOCATION"]
   }
 }

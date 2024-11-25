@@ -51,6 +51,7 @@ export default function PointDetailScreen({ route, navigation }) {
         task: "Task 2 Description",
         difficulty: 1,
         rating: 5,
+        location: { latitude: 37.7749, longitude: -122.4194 },
       },
       {
         id: "3",
@@ -70,6 +71,7 @@ export default function PointDetailScreen({ route, navigation }) {
         task: "Task 3 Description",
         difficulty: 2,
         rating: 5,
+        location: { latitude: 37.7749, longitude: -122.4194 },
       },
     ];
 
