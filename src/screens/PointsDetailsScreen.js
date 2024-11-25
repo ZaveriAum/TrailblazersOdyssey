@@ -193,6 +193,10 @@ export default function PointDetailScreen({ route, navigation }) {
           <Text style={styles.detailTitle}>Address:</Text>
           <Text style={styles.detailValue}>{pointDetails.address}</Text>
         </View>
+
+        <TouchableOpacity style={styles.backButton} color='#EEE' onPress={()=>navigation.goBack()}>
+          <Text style={styles.backButtonText}>Back</Text>
+        </TouchableOpacity>
       </ScrollView>
       <View style={styles.bottomNav}>
         <TouchableOpacity onPress={toggleMapModal}>
@@ -365,14 +369,14 @@ const styles = StyleSheet.create({
   backButton: {
     marginTop: 20,
     alignSelf: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    backgroundColor: '#555',
+    paddingVertical: 5,
+    paddingHorizontal: 6,
+    backgroundColor: '#EEE',
     borderRadius: 8,
   },
   backButtonText: {
     fontSize: 16,
-    color: '#fff',
+    color: '#1E1E1E',
   },
   bottomNav: {
   flexDirection: 'row',

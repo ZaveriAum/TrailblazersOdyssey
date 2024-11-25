@@ -6,10 +6,12 @@ export default function AboutScreen({ navigation }) {
   // Team member data
   //WILL REPLACE WHEN HAVE TEAM DATABASE
   const team_member = [
-    { name: "Aum Zaveri" },
-    { name: "Elio Fezollari" },
-    { name: "Mia Truong" },
-    { name: "Hamed Haghani" },
+    { name: "Amelia Johnson" },
+    { name: "Ethan Williams" },
+    { name: "Sophia Martinez" },
+    { name: "Lucas Brown" },
+    { name: "Olivia Taylor" },
+    { name: "Mason Clark" },
   ];
 
   return (
@@ -18,12 +20,7 @@ export default function AboutScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <Text style={styles.heading}>Team Members</Text>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.addButtonText}>Add New Member</Text>
-        </TouchableOpacity>
+        
         {team_member.map((member, index) => (
             <View key={index} style={styles.box}>
             <Text style={styles.developerText}>{member.name}</Text>
@@ -33,6 +30,12 @@ export default function AboutScreen({ navigation }) {
           </View>
           
         ))}
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate('AddMember')}
+        >
+          <Text style={styles.addButtonText}>Add New Member</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
