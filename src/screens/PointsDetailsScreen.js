@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Share, View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, Button } from 'react-native';
+import { Share, View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, Button, Linking } from 'react-native';
 import NavigationBar from '../components/NavigationBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
+import Geocoder from 'react-native-geocoding';
+import MapViewDirections from 'react-native-maps-directions';
 
 export default function PointDetailScreen({ route, navigation }) {
   const { pointId } = route.params;
@@ -10,6 +14,10 @@ export default function PointDetailScreen({ route, navigation }) {
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [rating, setRating] = useState(0);
+  const [mapVisible, setMapVisible] = useState(false);
+  const [mapRegion, setMapRegion] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   useEffect(() => {
     const points = [
@@ -27,6 +35,7 @@ export default function PointDetailScreen({ route, navigation }) {
         task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
         difficulty: 0,
         rating: 5,
+        location: { latitude: 37.7749, longitude: -122.4194 },
       },
       {
         id: "2",
@@ -42,6 +51,7 @@ export default function PointDetailScreen({ route, navigation }) {
         task: "Task 2 Description",
         difficulty: 1,
         rating: 5,
+        location: { latitude: 37.7749, longitude: -122.4194 },
       },
       {
         id: "3",
@@ -61,6 +71,7 @@ export default function PointDetailScreen({ route, navigation }) {
         task: "Task 3 Description",
         difficulty: 2,
         rating: 5,
+        location: { latitude: 37.7749, longitude: -122.4194 },
       },
     ];
 
@@ -69,6 +80,22 @@ export default function PointDetailScreen({ route, navigation }) {
       setPointDetails(point);
     }
   }, [pointId]);
+
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission to access location was denied');
+        return;
+      }
+      const location = await Location.getCurrentPositionAsync({});
+      setUserLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+    })();
+  }, []);
 
   if (!pointDetails) {
     return (
@@ -118,6 +145,16 @@ export default function PointDetailScreen({ route, navigation }) {
     return greenToRed[Math.min(difficulty, greenToRed.length - 1)];
   };
 
+  const toggleMapModal = () => {
+    setMapVisible(!mapVisible);
+  };
+
+  const openGoogleMaps = () => {
+    const destination = `${pointDetails.location.latitude},${pointDetails.location.longitude}`;
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
+    Linking.openURL(url);
+  };
+
   return (
     <View style={styles.container}>
 
@@ -158,11 +195,48 @@ export default function PointDetailScreen({ route, navigation }) {
           <Text style={styles.detailTitle}>Address:</Text>
           <Text style={styles.detailValue}>{pointDetails.address}</Text>
         </View>
+
+        <TouchableOpacity style={styles.backButton} color='#EEE' onPress={()=>navigation.goBack()}>
+          <Text style={styles.backButtonText}>Back</Text>
+        </TouchableOpacity>
       </ScrollView>
       <View style={styles.bottomNav}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={toggleMapModal}>
           <Icon name="map-marker" size={35} color="#1E1E1E" />
         </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={mapVisible}
+        onRequestClose={toggleMapModal}
+      >
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: pointDetails.location.latitude,
+              longitude: pointDetails.location.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+            showsUserLocation={true}
+          >
+            <Marker
+              coordinate={{
+                latitude: pointDetails.location.latitude,
+                longitude: pointDetails.location.longitude,
+              }}
+              title={pointDetails.name}
+              description={pointDetails.address}
+            />
+          </MapView>
+          <View style={styles.mapButtons}>
+            <Button title="Get Directions" onPress={openGoogleMaps} />
+            <Button title="Close" onPress={toggleMapModal} color="red" />
+          </View>
+        </View>
+      </Modal>
         <TouchableOpacity onPress={onShare}>
           <Icon name="send" size={35} color="#1E1E1E" />
         </TouchableOpacity>
@@ -297,14 +371,14 @@ const styles = StyleSheet.create({
   backButton: {
     marginTop: 20,
     alignSelf: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    backgroundColor: '#555',
+    paddingVertical: 5,
+    paddingHorizontal: 6,
+    backgroundColor: '#EEE',
     borderRadius: 8,
   },
   backButtonText: {
     fontSize: 16,
-    color: '#fff',
+    color: '#1E1E1E',
   },
   bottomNav: {
   flexDirection: 'row',
@@ -371,5 +445,16 @@ cancelButton: {
   padding: 5,
   zIndex: 10,
 },
-
+mapContainer: {
+  flex: 1,
+},
+map: {
+  flex: 1,
+},
+mapButtons: {
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  padding: 10,
+  backgroundColor: '#fff',
+},
 });
