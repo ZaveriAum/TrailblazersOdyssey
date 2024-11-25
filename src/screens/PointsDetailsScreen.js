@@ -4,6 +4,8 @@ import NavigationBar from '../components/NavigationBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import Geocoder from 'react-native-geocoding';
+import MapViewDirections from 'react-native-maps-directions';
 
 export default function PointDetailScreen({ route, navigation }) {
   const { pointId } = route.params;
@@ -13,7 +15,9 @@ export default function PointDetailScreen({ route, navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [rating, setRating] = useState(0);
   const [mapVisible, setMapVisible] = useState(false);
+  const [mapRegion, setMapRegion] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   useEffect(() => {
     const points = [
@@ -191,13 +195,10 @@ export default function PointDetailScreen({ route, navigation }) {
         </View>
       </ScrollView>
       <View style={styles.bottomNav}>
-      <View style={styles.bottomNav}>
         <TouchableOpacity onPress={toggleMapModal}>
           <Icon name="map-marker" size={35} color="#1E1E1E" />
         </TouchableOpacity>
-      </View>
 
-      {/* Map Modal */}
       <Modal
         animationType="slide"
         transparent={false}
