@@ -38,14 +38,14 @@ export default function CreatePointScreen({ addPoint, navigation }) {
       tags: tags,
     };
 
-    console.log('New point created:', newPoint); // Debugging log
-    addPoint(newPoint); // Call parent to add the point
+    console.log('New point created:', newPoint);
+    addPoint(newPoint); 
     alert('Point added successfully!');
     setPointName('');
     setPointTask('');
     setPointAddress('');
     setTags([]);
-    navigation.navigate('EditPoint'); // Navigate to EditPointScreen
+    navigation.navigate('EditPoint'); 
   };
 
   return (
