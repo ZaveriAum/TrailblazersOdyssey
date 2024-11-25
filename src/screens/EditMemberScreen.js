@@ -25,11 +25,13 @@ export default function AboutScreen({ navigation }) {
             <View key={index} style={styles.box}>
             <Text style={styles.developerText}>{member.name}</Text>
             <TouchableOpacity style={styles.deleteButton}>
+            
               <Text style={styles.deleteButtonText}>Delete</Text>
             </TouchableOpacity>
           </View>
-          
+            // ADD MEMBER BUTTON
         ))}
+        
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => navigation.navigate('AddMember')}
