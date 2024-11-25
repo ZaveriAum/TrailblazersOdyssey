@@ -2,10 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Share, View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, Button, Linking } from 'react-native';
 import NavigationBar from '../components/NavigationBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
-import Geocoder from 'react-native-geocoding';
-import MapViewDirections from 'react-native-maps-directions';
 
 export default function PointDetailScreen({ route, navigation }) {
   const { pointId } = route.params;
