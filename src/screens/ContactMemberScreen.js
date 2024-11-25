@@ -47,7 +47,7 @@ export default function ContactMemberScreen({ navigation }) {
       <NavigationBar navigation={navigation} />
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.heading}>Contact Us</Text>
+        <Text style={styles.heading}>Contact Member</Text>
 
         {/* Checkboxes for SMS and Email */}
         <View style={styles.checkboxContainer}>
