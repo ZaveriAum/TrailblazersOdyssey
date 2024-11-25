@@ -54,11 +54,8 @@ export default function NavigationBar({ navigation }) {
                 <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('Home')}>
                   <Text style={styles.dropdownText}>Home</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('Team')}>
-                  <Text style={styles.dropdownText}>Team</Text>
-                </TouchableOpacity>
                 <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('EditMember')}>
-                  <Text style={styles.dropdownText}>Edit Member</Text>
+                  <Text style={styles.dropdownText}>Team</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.dropdownItem} onPress={() => navigateToScreen('ContactMember')}>
                   <Text style={styles.dropdownText}>Contact Member</Text>

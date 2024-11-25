@@ -4,8 +4,19 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import NavigationBar from '../components/NavigationBar';
 import dropdown from "../../assets/drop-down.png"
 import eye from "../../assets/eye.png"
+import searchIcon from "../../assets/search.png"
+
 export default function HomeScreen({ navigation }) {
   const [searchText, setSearchText] = useState('');
+  const [tags, setTags] = useState([]);
+  const [search, setSearch] = useState("");
+  const [isTag,setIsTag] = useState("")
+  
+  const dropdownItem = [
+    { label: 'Task', value: 'task' },
+    { label: 'Name', value: 'name' }
+  ];
+  
   const [points, setPoints] = useState([
     {
       id: "1",
@@ -16,7 +27,6 @@ export default function HomeScreen({ navigation }) {
         { tagname: "Hiking", tagColor: "#F6B85C" },
         { tagname: "Winter", tagColor: "#B35CF6" },
         { tagname: "Rural", tagColor: "#F65CA4" },
-        
       ],
       task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
       difficulty: 0,
@@ -57,88 +67,106 @@ export default function HomeScreen({ navigation }) {
       rating: 5,
     },
   ]);
-  const difficulties = ["#50D890","#EEF65C","#F65C78"]
-
-  const [dropdownOpen,setdropDownOpen] = useState(false) 
+  
+  const difficulties = ["#50D890","#EEF65C","#F65C78"];
+  const [dropdownOpen,setdropDownOpen] = useState(false);
   const [dropdownValue, setDropdownValue] = useState(null);
-  const [dropdownItems, setDropdownItems] = useState([
-    { label: 'Easy', value: 'easy' },
-    { label: 'Hard', value: 'hard' },
-    { label: 'Medium', value: 'medium' },
-  ]);
-
+  const[miniDropDown,setMiniDropDown] = useState(null)
+  const[miniDropDownOpen,setminiDropDownOpen] = useState(false)
   const handleNavigate = (pointId) => {
     // Navigate to a detailed screen
     navigation.navigate('PointDetailScreen', { pointId });
   };
 
+  // Filter points based on the search text
+  const filteredPoints = points.filter(item => 
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <View style={styles.container}>
       <NavigationBar navigation={navigation} />
-
       <Text style={styles.pick}>Pick a Point!</Text>
+
       <FlatList
-        data={points}
+        data={filteredPoints} 
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.pointItem}>
             <View style={{flexDirection:'row', alignItems:'center'}}>
-            <View style={[styles.dot, { backgroundColor: difficulties[item.difficulty] }]} />
+              <View style={[styles.dot, { backgroundColor: difficulties[item.difficulty] }]} />
               <Text style={styles.pointName}>{item.name}</Text>
-              </View>
+            </View>
             <View style={styles.bottomRow}>
               <Text style={styles.pointTask}>{item.task}</Text>
 
               <TouchableOpacity
                 style={styles.infoButton}
                 onPress={() => {
-
-                  if(dropdownOpen && dropdownValue == item.id){
-                    setdropDownOpen(false)
-                    setDropdownValue(null)
-                    console.log("closed dropdown")
-                    console.log(dropdownValue,dropdownOpen)
-                  }
-                  else{
+                  if (dropdownOpen && dropdownValue == item.id) {
+                    setdropDownOpen(false);
+                    setDropdownValue(null);
+                  } else {
                     setdropDownOpen(true);
-                    setDropdownValue(item.id)
-                    console.log("Opened Dropdown")
-                    console.log(dropdownValue,dropdownOpen)
+                    setDropdownValue(item.id);
                   }
-                 }}
+                }}
               >
-                <Image style={dropdownValue == item.id ?styles.dropDownArrowUp:styles.dropDownArrow} source={dropdown}/>
+                <Image style={dropdownValue == item.id ? styles.dropDownArrowUp : styles.dropDownArrow} source={dropdown} />
               </TouchableOpacity>
             </View>
+
             {dropdownValue === item.id && (
-            <View style={styles.pointDropDown}>
-              <View style={styles.labels}>
-                <Text style={styles.tagTaskText}>Tags</Text>
-                <FlatList
-                  data={item.tags}
-                  keyExtractor={(tag, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <View style={[styles.tagItem, { backgroundColor: item.tagColor }]}>
-                      <Text style={styles.tagText}>{item.tagname}</Text>
-                    </View>
-                  )}
-                  numColumns={3} 
-                  columnWrapperStyle={styles.columnWrapper}  
-                />
-              </View>
-              <View style={styles.task}>
+              <View style={styles.pointDropDown}>
+                <View style={styles.labels}>
+                  <Text style={styles.tagTaskText}>Tags</Text>
+                  <FlatList
+                    data={item.tags}
+                    keyExtractor={(tag, index) => index.toString()}
+                    renderItem={({ item }) => (
+                      <View style={[styles.tagItem, { backgroundColor: item.tagColor }]}>
+                        <Text style={styles.tagText}>{item.tagname}</Text>
+                      </View>
+                    )}
+                    numColumns={3} 
+                    columnWrapperStyle={styles.columnWrapper}  
+                  />
+                </View>
+                <View style={styles.task}>
                   <Text style={styles.tagTaskText}>Task</Text>
                   <View style={styles.taskView}><Text>{item.task}</Text></View>
+                </View>
+                <TouchableOpacity onPress={() => handleNavigate(item.id)} style={styles.viewMore}>
+                  <Image source={eye} style={styles.eyeIcon} />
+                  <Text style={styles.buttonText}>View More</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={() => handleNavigate(item.id)} style={styles.viewMore} ><Image source={eye} style={styles.eyeIcon}/><Text style={styles.buttonText}>View More</Text></TouchableOpacity>
-            </View>
-  
-  )}
+            )}
           </View>
-          
         )}
         style={styles.list}
       />
+
+      <View style={styles.textInput}>
+        <Image source={searchIcon} style={styles.eyeIcon} />
+        <TextInput
+          style={styles.textInputInput}
+          placeholder="Search"
+          value={search}
+          onChangeText={(text) => setSearch(text)}  
+        />
+        <DropDownPicker
+          items={dropdownItem}
+          defaultValue={dropdownItem}
+          containerStyle={styles.dropdownContainer2}
+          style={styles.dropdownStyle}
+          dropDownStyle={styles.dropdownDropdownStyle}
+          onChangeItem={(item) => setMiniDropDown(item.value)}  
+          placeholder="Name"
+          open={miniDropDownOpen} 
+          setOpen={setminiDropDownOpen} 
+        />
+      </View>
     </View>
   );
 }
@@ -155,10 +183,30 @@ const styles = StyleSheet.create({
     textAlign:"center",
     marginVertical:20
   },
+  dropdownContainer2:{
+    width: 150,
+    marginLeft: 10,
+  },
+  textInput: {
+    justifyContent:"center",
+    alignContent:"center",
+    backgroundColor: "#EEE",
+    flexDirection: 'row',  
+    padding:5
+  },
+  textInputInput: {
+    backgroundColor: "white",
+    flex: 1, 
+    height: '100%', 
+    paddingLeft: 10, 
+    borderRadius:10,
+    borderWidth:1
+  },
   eyeIcon:{
     width:25,
     height:25,
-    marginRight:5
+    marginRight:5,
+    alignSelf: 'center', 
   },
   viewMore:{
     backgroundColor:"#EEEEEE",
@@ -303,4 +351,3 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
-

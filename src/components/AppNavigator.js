@@ -6,11 +6,11 @@ import SplashScreen from '../screens/SpalshScreen';
 import HomeScreen from '../screens/HomeScreen';
 import AboutScreen from '../screens/AboutScreen';
 import PointDetailScreen from '../screens/PointsDetailsScreen';
-import TeamScreen from '../screens/TeamScreen';
 import EditMemberScreen from  '../screens/EditMemberScreen';
 import ContactMemberScreen from  '../screens/ContactMemberScreen';
 import CreatePointScreen from '../screens/CreatePointScreen';
 import EditPointScreen  from '../screens/EditPointScreen';
+import AddTeamMemberScreen from '../screens/AddTeamMemberScreen';
 
 
 const Stack = createStackNavigator();
@@ -23,9 +23,9 @@ export default function AppNavigator() {
             <Stack.Screen name="Splash" component={SplashScreen}/>
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="About" component={AboutScreen} />
-            <Stack.Screen name="Team" component={TeamScreen} />
             <Stack.Screen name="PointDetailScreen" component={PointDetailScreen} />
             <Stack.Screen name="EditMember" component={EditMemberScreen} />
+            <Stack.Screen name="AddMember" component={AddTeamMemberScreen} />
             <Stack.Screen name="ContactMember" component={ContactMemberScreen} />
             <Stack.Screen name="CreatePoint" component={CreatePointScreen} />
             <Stack.Screen name="EditPoint" component={EditPointScreen}/>

@@ -6,9 +6,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Picker,
 } from 'react-native';
 import NavigationBar from '../components/NavigationBar';
+import {Picker} from '@react-native-picker/picker'
 
 export default function EditPointScreen({ navigation }) {
   const [points, setPoints] = useState([
@@ -317,4 +317,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
