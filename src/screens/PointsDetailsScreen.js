@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Share, View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, Button, Linking } from 'react-native';
 import NavigationBar from '../components/NavigationBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
 export default function PointDetailScreen({ route, navigation }) {
   const { pointId } = route.params;
@@ -11,9 +13,7 @@ export default function PointDetailScreen({ route, navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [rating, setRating] = useState(0);
   const [mapVisible, setMapVisible] = useState(false);
-  const [mapRegion, setMapRegion] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
-  const [currentLocation, setCurrentLocation] = useState(null);
 
   useEffect(() => {
     const points = [
@@ -31,7 +31,7 @@ export default function PointDetailScreen({ route, navigation }) {
         task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
         difficulty: 0,
         rating: 5,
-        location: { latitude: 37.7749, longitude: -122.4194 },
+        location: { latitude: 55.032750, longitude: 12.560340 },
       },
       {
         id: "2",
@@ -76,7 +76,6 @@ export default function PointDetailScreen({ route, navigation }) {
       setPointDetails(point);
     }
   }, [pointId]);
-
 
   useEffect(() => {
     (async () => {
@@ -192,7 +191,8 @@ export default function PointDetailScreen({ route, navigation }) {
           <Text style={styles.detailValue}>{pointDetails.address}</Text>
         </View>
 
-        <TouchableOpacity style={styles.backButton} color='#EEE' onPress={()=>navigation.goBack()}>
+        <TouchableOpacity style={styles.backButton} 
+         onPress={()=>navigation.goBack()}>
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -200,8 +200,8 @@ export default function PointDetailScreen({ route, navigation }) {
         <TouchableOpacity onPress={toggleMapModal}>
           <Icon name="map-marker" size={35} color="#1E1E1E" />
         </TouchableOpacity>
-
-      <Modal
+      
+        <Modal
         animationType="slide"
         transparent={false}
         visible={mapVisible}
@@ -211,8 +211,8 @@ export default function PointDetailScreen({ route, navigation }) {
           <MapView
             style={styles.map}
             initialRegion={{
-              latitude: pointDetails.location.latitude,
-              longitude: pointDetails.location.longitude,
+              latitude: 43.653225,
+              longitude: -79.383186,
               latitudeDelta: 0.01,
               longitudeDelta: 0.01,
             }}
@@ -223,8 +223,8 @@ export default function PointDetailScreen({ route, navigation }) {
                 latitude: pointDetails.location.latitude,
                 longitude: pointDetails.location.longitude,
               }}
-              title={pointDetails.name}
-              description={pointDetails.address}
+              title="MyLocation"
+              description="This is a marker in San Francisco"
             />
           </MapView>
           <View style={styles.mapButtons}>
@@ -233,6 +233,7 @@ export default function PointDetailScreen({ route, navigation }) {
           </View>
         </View>
       </Modal>
+
         <TouchableOpacity onPress={onShare}>
           <Icon name="send" size={35} color="#1E1E1E" />
         </TouchableOpacity>

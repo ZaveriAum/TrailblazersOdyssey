@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import NavigationBar from '../components/NavigationBar';
-import dropdown from "../../assets/drop-down.png"
-import eye from "../../assets/eye.png"
-import searchIcon from "../../assets/search.png"
+import dropdown from "../../assets/images/drop-down.png"
+import eye from "../../assets/images/eye.png"
+import searchIcon from "../../assets/images/search.png"
 
 export default function HomeScreen({ navigation }) {
   const [searchText, setSearchText] = useState('');

@@ -31,7 +31,7 @@ export default function NavigationBar({ navigation }) {
 
       <Text style={styles.navBarTitle}>Trailblazers Odyssey</Text>
 
-      <Image source={require('../../assets/icon-white.png')} style={styles.logo} />
+      <Image source={require('../../assets/images/icon-white.png')} style={styles.logo} />
 
       {dropdownVisible && buttonPosition && (
         <Modal
