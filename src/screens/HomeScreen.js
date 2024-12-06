@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import NavigationBar from '../components/NavigationBar';
 import dropdown from "../../assets/images/drop-down.png"
 import eye from "../../assets/images/eye.png"
 import searchIcon from "../../assets/images/search.png"
-
+import PointService from '../service/PointService';
 export default function HomeScreen({ navigation }) {
   const [searchText, setSearchText] = useState('');
   const [tags, setTags] = useState([]);
@@ -17,58 +17,10 @@ export default function HomeScreen({ navigation }) {
     { label: 'Name', value: 'name' }
   ];
   
-  const [points, setPoints] = useState([
-    {
-      id: "1",
-      name: "Point 1",
-      address: "150, Kendle avenue",
-      tags: [
-        { tagname: "Photo", tagColor: "#5C8FF6" },
-        { tagname: "Hiking", tagColor: "#F6B85C" },
-        { tagname: "Winter", tagColor: "#B35CF6" },
-        { tagname: "Rural", tagColor: "#F65CA4" },
-      ],
-      task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
-      difficulty: 0,
-      rating: 5,
-    },
-    {
-      id: "2",
-      name: "Point 2",
-      address: "160, Kendle avenue",
-      tags: [
-        { tagname: "Adventure", tagColor: "#F6A95C" },
-        { tagname: "Nature", tagColor: "#6CF65C" },
-        { tagname: "Beach", tagColor: "#F6F65C" },
-        { tagname: "Mountain", tagColor: "#8A5CF6" },
-        { tagname: "Urban", tagColor: "#F65C8A" }
-      ],
-      task: "Task 2 Description",
-      difficulty: 1,
-      rating: 5,
-    },
-    {
-      id: "3",
-      name: "Point 3",
-      address: "170, Kendle avenue",
-      tags: [
-        { tagname: "Photo", tagColor: "#5C8FF6" },
-        { tagname: "Hiking", tagColor: "#F6B85C" },
-        { tagname: "Winter", tagColor: "#B35CF6" },
-        { tagname: "Rural", tagColor: "#F65CA4" },
-        { tagname: "Adventure", tagColor: "#F6A95C" },
-        { tagname: "Nature", tagColor: "#6CF65C" },
-        { tagname: "Beach", tagColor: "#F6F65C" },
-        { tagname: "Mountain", tagColor: "#8A5CF6" },
-        { tagname: "Urban", tagColor: "#F65C8A" }
-      ],
-      task: "Task 3 Description",
-      difficulty: 2,
-      rating: 5,
-    },
-  ]);
+  const [points, setPoints] = useState([]);
   
-  const difficulties = ["#50D890","#EEF65C","#F65C78"];
+  const difficulties = ["#50D890","#8ADE55","#C4E940","#EEF65C","#F5B042","#F77854","#F65C78","#D1459E","#9341E2","#5E4BE4"];
+  
   const [dropdownOpen,setdropDownOpen] = useState(false);
   const [dropdownValue, setDropdownValue] = useState(null);
   const[miniDropDown,setMiniDropDown] = useState(null)
@@ -77,6 +29,14 @@ export default function HomeScreen({ navigation }) {
     // Navigate to a detailed screen
     navigation.navigate('PointDetailScreen', { pointId });
   };
+
+  useEffect(()=>{
+     PointService.getPoints().then((res)=>{
+      setPoints(res.data.points)
+    }).catch((e)=>{
+      console.log("error")
+    })
+  }, [])
 
   // Filter points based on the search text
   const filteredPoints = points.filter(item => 
@@ -90,11 +50,11 @@ export default function HomeScreen({ navigation }) {
 
       <FlatList
         data={filteredPoints} 
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={styles.pointItem}>
             <View style={{flexDirection:'row', alignItems:'center'}}>
-              <View style={[styles.dot, { backgroundColor: difficulties[item.difficulty] }]} />
+              <View style={[styles.dot, { backgroundColor: difficulties[item.difficulty - 1] }]} />
               <Text style={styles.pointName}>{item.name}</Text>
             </View>
             <View style={styles.bottomRow}>
@@ -103,26 +63,26 @@ export default function HomeScreen({ navigation }) {
               <TouchableOpacity
                 style={styles.infoButton}
                 onPress={() => {
-                  if (dropdownOpen && dropdownValue == item.id) {
+                  if (dropdownOpen && dropdownValue == item._id) {
                     setdropDownOpen(false);
                     setDropdownValue(null);
                   } else {
                     setdropDownOpen(true);
-                    setDropdownValue(item.id);
+                    setDropdownValue(item._id);
                   }
                 }}
               >
-                <Image style={dropdownValue == item.id ? styles.dropDownArrowUp : styles.dropDownArrow} source={dropdown} />
+                <Image style={dropdownValue == item._id ? styles.dropDownArrowUp : styles.dropDownArrow} source={dropdown} />
               </TouchableOpacity>
             </View>
 
-            {dropdownValue === item.id && (
+            {dropdownValue === item._id && (
               <View style={styles.pointDropDown}>
                 <View style={styles.labels}>
                   <Text style={styles.tagTaskText}>Tags</Text>
                   <FlatList
                     data={item.tags}
-                    keyExtractor={(tag, index) => index.toString()}
+                    keyExtractor={(tag) => tag._id}
                     renderItem={({ item }) => (
                       <View style={[styles.tagItem, { backgroundColor: item.tagColor }]}>
                         <Text style={styles.tagText}>{item.tagname}</Text>
@@ -136,7 +96,9 @@ export default function HomeScreen({ navigation }) {
                   <Text style={styles.tagTaskText}>Task</Text>
                   <View style={styles.taskView}><Text>{item.task}</Text></View>
                 </View>
-                <TouchableOpacity onPress={() => handleNavigate(item.id)} style={styles.viewMore}>
+                <TouchableOpacity onPress={() => {
+                  handleNavigate(item._id)
+                  }} style={styles.viewMore}>
                   <Image source={eye} style={styles.eyeIcon} />
                   <Text style={styles.buttonText}>View More</Text>
                 </TouchableOpacity>

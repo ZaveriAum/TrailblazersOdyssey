@@ -4,6 +4,8 @@ import NavigationBar from '../components/NavigationBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import PointService from '../service/PointService';
+import Toast from 'react-native-toast-message';
 
 export default function PointDetailScreen({ route, navigation }) {
   const { pointId } = route.params;
@@ -12,69 +14,16 @@ export default function PointDetailScreen({ route, navigation }) {
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [rating, setRating] = useState(0);
+  const [lat, setLat] = useState()
+  const [long, setLong] = useState()
   const [mapVisible, setMapVisible] = useState(false);
-  const [userLocation, setUserLocation] = useState(null);
+  const difficulties = ["#50D890","#8ADE55","#C4E940","#EEF65C","#F5B042","#F77854","#F65C78","#D1459E","#9341E2","#5E4BE4"];
 
-  useEffect(() => {
-    const points = [
-      {
-        id: "1",
-        name: "Point 1",
-        address: "150, Kendle avenue",
-        tags: [
-          { tagname: "Photo", tagColor: "#5C8FF6" },
-          { tagname: "Hiking", tagColor: "#F6B85C" },
-          { tagname: "Winter", tagColor: "#B35CF6" },
-          { tagname: "Rural", tagColor: "#F65CA4" },
-          
-        ],
-        task: "This is a very long description for the first task just to test that it works for veeeeeeeeeeeeeeeeeery long descriptions just incase!",
-        difficulty: 0,
-        rating: 5,
-        location: { latitude: 55.032750, longitude: 12.560340 },
-      },
-      {
-        id: "2",
-        name: "Point 2",
-        address: "160, Kendle avenue",
-        tags: [
-          { tagname: "Adventure", tagColor: "#F6A95C" },
-          { tagname: "Nature", tagColor: "#6CF65C" },
-          { tagname: "Beach", tagColor: "#F6F65C" },
-          { tagname: "Mountain", tagColor: "#8A5CF6" },
-          { tagname: "Urban", tagColor: "#F65C8A" }
-        ],
-        task: "Task 2 Description",
-        difficulty: 1,
-        rating: 5,
-        location: { latitude: 37.7749, longitude: -122.4194 },
-      },
-      {
-        id: "3",
-        name: "Point 3",
-        address: "170, Kendle avenue",
-        tags: [
-          { tagname: "Photo", tagColor: "#5C8FF6" },
-          { tagname: "Hiking", tagColor: "#F6B85C" },
-          { tagname: "Winter", tagColor: "#B35CF6" },
-          { tagname: "Rural", tagColor: "#F65CA4" },
-          { tagname: "Adventure", tagColor: "#F6A95C" },
-          { tagname: "Nature", tagColor: "#6CF65C" },
-          { tagname: "Beach", tagColor: "#F6F65C" },
-          { tagname: "Mountain", tagColor: "#8A5CF6" },
-          { tagname: "Urban", tagColor: "#F65C8A" }
-        ],
-        task: "Task 3 Description",
-        difficulty: 2,
-        rating: 5,
-        location: { latitude: 37.7749, longitude: -122.4194 },
-      },
-    ];
 
-    const point = points.find((p) => p.id === pointId);
-    if (point) {
-      setPointDetails(point);
-    }
+  useEffect(() => { 
+    PointService.getPoint(pointId).then((res)=>{
+      setPointDetails(res.data.point);
+    }).catch((e)=>console.log("Error: " + e))
   }, [pointId]);
 
   useEffect(() => {
@@ -84,6 +33,10 @@ export default function PointDetailScreen({ route, navigation }) {
         Alert.alert('Permission to access location was denied');
         return;
       }
+      PointService.getLatLong(pointDetails.address).then((res)=>{
+        setLat(res.data[0].lat)
+        setLong(res.data[0].lon)
+      })
       const location = await Location.getCurrentPositionAsync({});
       setUserLocation({
         latitude: location.coords.latitude,
@@ -102,12 +55,11 @@ export default function PointDetailScreen({ route, navigation }) {
 
   const onShare = async ()=>{
     try {
+      const destination = `${lat},${long}`;
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
       const result = await Share.share({
         message:
-          `${pointDetails.name} 
-          Task: ${pointDetails.task}
-          Address: ${pointDetails.address}
-          `,
+          `${pointDetails.name}\nTask: ${pointDetails.task}\nAddress: ${pointDetails.address}\nDifficulty: ${pointDetails.difficulty}\nDestination: ${url}`,
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -124,10 +76,15 @@ export default function PointDetailScreen({ route, navigation }) {
     setRating(rating);
   }
 
-  const rate = ()=>{
+  const rate = async ()=>{
     setModalVisible(!modalVisible)
     pointDetails.rating = (pointDetails.rating + rating)/2
-    console.log(pointDetails.rating)
+    await PointService.updatePoint(pointDetails._id, {rating : pointDetails.rating}).then((res)=>{
+      Toast.show({
+        type: 'success',
+        text1 : `Thank you for rating ${res.data.name}`
+      })
+    }).catch(e=>console.error(e))
   }
 
   const toggleTooltip = () => {
@@ -136,8 +93,7 @@ export default function PointDetailScreen({ route, navigation }) {
   };
 
   const getDifficultyColor = (difficulty) => {
-    const greenToRed = ['#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722', '#F44336'];
-    return greenToRed[Math.min(difficulty, greenToRed.length - 1)];
+    return difficulties[pointDetails.difficulty - 1];
   };
 
   const toggleMapModal = () => {
@@ -145,7 +101,7 @@ export default function PointDetailScreen({ route, navigation }) {
   };
 
   const openGoogleMaps = () => {
-    const destination = `${pointDetails.location.latitude},${pointDetails.location.longitude}`;
+    const destination = `${lat},${long}`;
     const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
     Linking.openURL(url);
   };
@@ -220,8 +176,8 @@ export default function PointDetailScreen({ route, navigation }) {
           >
             <Marker
               coordinate={{
-                latitude: pointDetails.location.latitude,
-                longitude: pointDetails.location.longitude,
+                latitude: lat,
+                longitude: long,
               }}
               title="MyLocation"
               description="This is a marker in San Francisco"
