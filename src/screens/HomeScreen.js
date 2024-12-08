@@ -34,7 +34,7 @@ export default function HomeScreen({ navigation }) {
      PointService.getPoints().then((res)=>{
       setPoints(res.data.points)
     }).catch((e)=>{
-      console.log("error")
+      console.log("error",e)
     })
   }, [])
 
@@ -48,7 +48,7 @@ export default function HomeScreen({ navigation }) {
       <NavigationBar navigation={navigation} />
       <Text style={styles.pick}>Pick a Point!</Text>
 
-      <FlatList
+      {filteredPoints.length>0 ? <FlatList
         data={filteredPoints} 
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
@@ -107,7 +107,7 @@ export default function HomeScreen({ navigation }) {
           </View>
         )}
         style={styles.list}
-      />
+      /> :           <View style={styles.noPoints}><Text style={styles.noPointsText}>There are currently no availible points</Text></View>}
 
       <View style={styles.textInput}>
         <Image source={searchIcon} style={styles.eyeIcon} />
@@ -137,6 +137,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1B2027',
+  },
+  noPointsText:{
+    color:"white",
+    fontSize:20,
+    backgroundColor:"#121212",
+    padding:20,
+    borderRadius:20
+  },
+  noPoints:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:"center",
+    marginTop:-120,
+    padding:20,
   },
   pick:{
     fontSize:50,

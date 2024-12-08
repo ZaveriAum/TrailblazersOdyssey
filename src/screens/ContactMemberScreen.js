@@ -1,157 +1,195 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
-import NavigationBar from "../components/NavigationBar";
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
+import NavigationBar from '../components/NavigationBar';
+import TeamService from '../service/TeamService'
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-export default function ContactMemberScreen({ navigation }) {
-  const [message, setMessage] = useState("");
-  const [isSMSChecked, setIsSMSChecked] = useState(false);
-  const [isEmailChecked, setIsEmailChecked] = useState(false);
 
-  const CustomCheckbox = ({ checked, onPress }) => (
-    <TouchableOpacity onPress={onPress} style={[styles.customCheckbox, checked && styles.checked]}>
-      {checked && <View style={styles.checkedCircle} />}
-    </TouchableOpacity>
-  );
+const ContactMemberScreen = ({ navigation }) => {
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [email, setEmail] = useState('');
+  const [teamMember, setTeamMember] = useState(null);
+  const [message, setMessage] = useState('');
+  const [team, setTeam] = useState([]);
 
-  const sendMessage = () => {
-    if (message.trim() === "") {
-      Alert.alert("Error", "Please enter a message.");
+  useEffect(() => {
+    TeamService.getTeam()
+      .then((res) => {
+        setTeam(res.data.team);
+      })
+      .catch((e) => console.log(e.message));
+  }, []);
+
+  const getDropdownItems = () => {
+    if (!team.length) return [];
+  
+    return team
+      .filter(
+        (member) =>
+          (selectedOption === 'email' && member.email) ||
+          (selectedOption === 'sms' && member.phone_number)
+      )
+      .map((member) => {
+        const label = member.first_name + member.last_name
+        const value =
+          selectedOption === 'email'
+            ? member.email
+            : member.phone_number;
+        return { label, value };
+      });
+  };
+  
+  
+
+  const handleSend = () => {
+    if (!teamMember || !message) {
+      alert('Please fill all fields');
       return;
     }
 
-    if (!isSMSChecked && !isEmailChecked) {
-      Alert.alert("Error", "Please select either SMS or Email to send.");
-      return;
+    if (selectedOption === 'email') {
+      alert(`Email sent to ${teamMember} with message: ${message}`);
+    } else if (selectedOption === 'sms') {
+      alert(`SMS sent to ${teamMember} with message: ${message}`);
     }
-
-    let sendMethod = "";
-    if (isSMSChecked) {
-      sendMethod = "SMS";
-    } else if (isEmailChecked) {
-      sendMethod = "Email";
-    }
-
-    
-    Alert.alert(
-      `${sendMethod} Sent`,
-      `Your message: "${message}" has been sent via ${sendMethod}.`
-    );
-    setMessage("");
-    setIsSMSChecked(false);
-    setIsEmailChecked(false);
   };
 
   return (
     <View style={styles.container}>
       <NavigationBar navigation={navigation} />
-
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.heading}>Contact Member</Text>
-
-        <View style={styles.checkboxContainer}>
-          <View style={styles.checkboxWrapper}>
-            <CustomCheckbox checked={isSMSChecked} onPress={() => setIsSMSChecked(!isSMSChecked)} />
-            <Text style={styles.checkboxLabel}>SMS</Text>
-          </View>
-          <View style={styles.checkboxWrapper}>
-            <CustomCheckbox checked={isEmailChecked} onPress={() => setIsEmailChecked(!isEmailChecked)} />
-            <Text style={styles.checkboxLabel}>Email</Text>
-          </View>
+      <Text style={styles.header}>Contact Member</Text>
+      <View style={styles.body}>
+        <View style={styles.radioContainer}>
+          <TouchableOpacity
+            style={styles.radioOption}
+            onPress={() => setSelectedOption('email')}
+          >
+            <Text
+              style={selectedOption === 'email' ? styles.radioSelected : styles.radioText}
+            >
+              Email
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.radioOption}
+            onPress={() => setSelectedOption('sms')}
+          >
+            <Text
+              style={selectedOption === 'sms' ? styles.radioSelected : styles.radioText}
+            >
+              SMS
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your message"
-          placeholderTextColor="#888"
-          multiline
-          value={message}
-          onChangeText={setMessage}
-        />
+        {selectedOption && (
+          <View style={styles.form}>
+            {selectedOption === 'email' && (
+              <TextInput
+                style={styles.input}
+                placeholder="Your Email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                placeholderTextColor="#888"
+              />
+            )}
+            <RNPickerSelect
+              onValueChange={(value) => setTeamMember(value)}
+              items={getDropdownItems()}
+              placeholder={{ label: 'Select Team Member', value: null }}
+              style={{
+                inputIOS: styles.input,
+                inputAndroid: styles.input,
+                iconContainer: {
+                  top: 10,
+                  right: 10,
+                },
+              }}
+              Icon={() =><Icon name="caret-down" size={35} color="#1E1E1E" />}
+              useNativeAndroidPickerStyle={false}
+            />
 
-        <TouchableOpacity style={styles.button} onPress={sendMessage}>
-          <Text style={styles.buttonText}>Send Message</Text>
-        </TouchableOpacity>
-      </ScrollView>
+
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="Message"
+              value={message}
+              onChangeText={setMessage}
+              multiline
+              placeholderTextColor="#888"
+            />
+            <View style={styles.buttonWrapper}>
+              <Button title="Send" onPress={handleSend} color="#50D890" />
+            </View>
+          </View>
+        )}
+      </View>
     </View>
   );
-}
+};
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1B2027",
+    backgroundColor: '#1B2027',
   },
-  contentContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  body: {
+    flex: 1,
+    justifyContent: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 40,
   },
-  heading: {
+  header: {
     fontSize: 30,
-    fontWeight: "bold",
-    color: "#FFF",
+    fontWeight: 'bold',
+    color: '#FFF',
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  radioContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
     marginBottom: 20,
-    textAlign: "center",
+  },
+  radioOption: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: '#31363F',
+  },
+  radioText: {
+    color: '#FFF',
+    fontSize: 16,
+  },
+  radioSelected: {
+    color: '#50D890',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  form: {
+    backgroundColor: '#242C34',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 3,
   },
   input: {
-    backgroundColor: "#31363F",
-    color: "#FFF",
-    width: "100%",
+    backgroundColor: '#31363F',
+    color: '#FFF',
     padding: 10,
-    borderRadius: 10,
-    marginBottom: 20,
-    textAlignVertical: "top",
-    height: 150,
+    borderRadius: 8,
+    marginBottom: 15,
+    height: 50,
+    paddingRight: 30,
   },
-  checkboxContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    marginBottom: 20,
+  textArea: {
+    height: 100,
+    textAlignVertical: 'top',
   },
-  checkboxWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  checkboxLabel: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "500",
-    marginLeft: 10, 
-  },
-  customCheckbox: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 2,
-    borderColor: "#FFF",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
-  },
-  checked: {
-    backgroundColor: "#28a745",
-    borderColor: "#28a745",
-  },
-  checkedCircle: {
-    width: 15,
-    height: 15,
-    borderRadius: 7.5, 
-    backgroundColor: "#FFF", 
-  },
-  button: {
-    backgroundColor: "#50D890",
-    paddingVertical: 15,
-    paddingHorizontal: 25,
-    borderRadius: 10,
-    marginBottom: 20,
-    width: "80%", 
-    alignItems: "center", 
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: "bold",
+  buttonWrapper: {
+    marginTop: 10,
   },
 });
+
+export default ContactMemberScreen;
