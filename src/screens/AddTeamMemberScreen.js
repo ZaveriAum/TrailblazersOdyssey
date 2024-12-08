@@ -1,17 +1,70 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import NavigationBar from "../components/NavigationBar";
+import TeamService from "../service/TeamService";  // Import the TeamService to interact with the backend
 
 export default function AddTeamMemberScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [firstName, setFirstName] = useState(""); // First name input
+  const [lastName, setLastName] = useState(""); // Last name input
+
+  // Handle form submission
+  const handleAddMember = async () => {
+    if (!firstName || !lastName || !email || !phone) {
+      Alert.alert("Error", "All fields are required.");
+      return;
+    }
+
+    const newMember = {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      phone_number: phone,
+    };
+
+    try {
+      const response = await TeamService.createMember(newMember);
+      if (response.data.status) {
+        Alert.alert("Success", "Member added successfully.");
+        navigation.goBack(); // Navigate back to the previous screen after success
+      } else {
+        Alert.alert("Error", "Failed to add member.");
+      }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred while adding the member.");
+      console.error(error);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <NavigationBar navigation={navigation} />
       <View style={styles.form}>
         <Text style={styles.header}>Add Member</Text>
-        
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>First Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Eg. John"
+            placeholderTextColor="#A1A1A1"
+            value={firstName}
+            onChangeText={setFirstName}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Last Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Eg. Doe"
+            placeholderTextColor="#A1A1A1"
+            value={lastName}
+            onChangeText={setLastName}
+          />
+        </View>
+
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Email</Text>
           <TextInput
@@ -36,7 +89,7 @@ export default function AddTeamMemberScreen({ navigation }) {
           />
         </View>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleAddMember}>
           <Text style={styles.buttonText}>Add Member</Text>
         </TouchableOpacity>
       </View>
@@ -47,7 +100,7 @@ export default function AddTeamMemberScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1B2027',
+    backgroundColor: "#1B2027",
   },
   form: {
     flex: 1,
