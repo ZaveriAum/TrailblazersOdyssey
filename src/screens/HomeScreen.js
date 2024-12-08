@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import NavigationBar from '../components/NavigationBar';
 import dropdown from "../../assets/images/drop-down.png"
@@ -7,40 +7,47 @@ import eye from "../../assets/images/eye.png"
 import searchIcon from "../../assets/images/search.png"
 import PointService from '../service/PointService';
 export default function HomeScreen({ navigation }) {
-  const [searchText, setSearchText] = useState('');
-  const [tags, setTags] = useState([]);
   const [search, setSearch] = useState("");
-  const [isTag,setIsTag] = useState("")
-  
+
   const dropdownItem = [
-    { label: 'Task', value: 'task' },
-    { label: 'Name', value: 'name' }
+    { label: 'Task', value: 'Task' },
+    { label: 'Name', value: 'Name' }
   ];
-  
+
   const [points, setPoints] = useState([]);
-  
-  const difficulties = ["#50D890","#8ADE55","#C4E940","#EEF65C","#F5B042","#F77854","#F65C78","#D1459E","#9341E2","#5E4BE4"];
-  
-  const [dropdownOpen,setdropDownOpen] = useState(false);
+
+  const difficulties = ["#50D890", "#8ADE55", "#C4E940", "#EEF65C", "#F5B042", "#F77854", "#F65C78", "#D1459E", "#9341E2", "#5E4BE4"];
+
+  const [dropdownOpen, setdropDownOpen] = useState(false);
   const [dropdownValue, setDropdownValue] = useState(null);
-  const[miniDropDown,setMiniDropDown] = useState(null)
-  const[miniDropDownOpen,setminiDropDownOpen] = useState(false)
+  const [miniDropDown, setMiniDropDown] = useState("Name")
+  const [miniDropDownOpen, setminiDropDownOpen] = useState(false)
   const handleNavigate = (pointId) => {
     // Navigate to a detailed screen
     navigation.navigate('PointDetailScreen', { pointId });
   };
 
-  useEffect(()=>{
-     PointService.getPoints().then((res)=>{
+  useEffect(() => {
+    console.log(miniDropDown)
+  }, [miniDropDown])
+
+  useEffect(() => {
+    PointService.getPoints().then((res) => {
       setPoints(res.data.points)
-    }).catch((e)=>{
-      console.log("error",e)
+    }).catch((e) => {
+      console.log("error", e)
     })
   }, [])
 
-  // Filter points based on the search text
-  const filteredPoints = points.filter(item => 
-    item.name.toLowerCase().includes(search.toLowerCase())
+
+  const filteredPoints = points.filter(item => {
+    if (miniDropDown === 'Name') {
+      return item.name.toLowerCase().includes(search.toLowerCase());
+    } else if (miniDropDown === 'Task') {
+      return item.task.toLowerCase().includes(search.toLowerCase());
+    }
+    return true;
+  }
   );
 
   return (
@@ -48,12 +55,12 @@ export default function HomeScreen({ navigation }) {
       <NavigationBar navigation={navigation} />
       <Text style={styles.pick}>Pick a Point!</Text>
 
-      {filteredPoints.length>0 ? <FlatList
-        data={filteredPoints} 
+      {filteredPoints.length > 0 ? <FlatList
+        data={filteredPoints}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={styles.pointItem}>
-            <View style={{flexDirection:'row', alignItems:'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View style={[styles.dot, { backgroundColor: difficulties[item.difficulty - 1] }]} />
               <Text style={styles.pointName}>{item.name}</Text>
             </View>
@@ -88,8 +95,8 @@ export default function HomeScreen({ navigation }) {
                         <Text style={styles.tagText}>{item.tagname}</Text>
                       </View>
                     )}
-                    numColumns={3} 
-                    columnWrapperStyle={styles.columnWrapper}  
+                    numColumns={3}
+                    columnWrapperStyle={styles.columnWrapper}
                   />
                 </View>
                 <View style={styles.task}>
@@ -98,7 +105,7 @@ export default function HomeScreen({ navigation }) {
                 </View>
                 <TouchableOpacity onPress={() => {
                   handleNavigate(item._id)
-                  }} style={styles.viewMore}>
+                }} style={styles.viewMore}>
                   <Image source={eye} style={styles.eyeIcon} />
                   <Text style={styles.buttonText}>View More</Text>
                 </TouchableOpacity>
@@ -107,7 +114,7 @@ export default function HomeScreen({ navigation }) {
           </View>
         )}
         style={styles.list}
-      /> :           <View style={styles.noPoints}><Text style={styles.noPointsText}>There are currently no availible points</Text></View>}
+      /> : <View style={styles.noPoints}><Text style={styles.noPointsText}>No points can be found</Text></View>}
 
       <View style={styles.textInput}>
         <Image source={searchIcon} style={styles.eyeIcon} />
@@ -115,18 +122,18 @@ export default function HomeScreen({ navigation }) {
           style={styles.textInputInput}
           placeholder="Search"
           value={search}
-          onChangeText={(text) => setSearch(text)}  
+          onChangeText={(text) => setSearch(text)}
         />
         <DropDownPicker
           items={dropdownItem}
-          defaultValue={dropdownItem}
+          value={miniDropDown} 
           containerStyle={styles.dropdownContainer2}
           style={styles.dropdownStyle}
           dropDownStyle={styles.dropdownDropdownStyle}
-          onChangeItem={(item) => setMiniDropDown(item.value)}  
           placeholder="Name"
-          open={miniDropDownOpen} 
-          setOpen={setminiDropDownOpen} 
+          open={miniDropDownOpen}
+          setOpen={setminiDropDownOpen}
+          setValue={setMiniDropDown}
         />
       </View>
     </View>
@@ -138,62 +145,62 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1B2027',
   },
-  noPointsText:{
-    color:"white",
-    fontSize:20,
-    backgroundColor:"#121212",
-    padding:20,
-    borderRadius:20
+  noPointsText: {
+    color: "white",
+    fontSize: 20,
+    backgroundColor: "#121212",
+    padding: 20,
+    borderRadius: 20
   },
-  noPoints:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:"center",
-    marginTop:-120,
-    padding:20,
+  noPoints: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: "center",
+    marginTop: -120,
+    padding: 20,
   },
-  pick:{
-    fontSize:50,
-    color:"#EEE",
-    fontWeight:500,
-    textAlign:"center",
-    marginVertical:20
+  pick: {
+    fontSize: 50,
+    color: "#EEE",
+    fontWeight: 500,
+    textAlign: "center",
+    marginVertical: 20
   },
-  dropdownContainer2:{
+  dropdownContainer2: {
     width: 150,
     marginLeft: 10,
   },
   textInput: {
-    justifyContent:"center",
-    alignContent:"center",
+    justifyContent: "center",
+    alignContent: "center",
     backgroundColor: "#EEE",
-    flexDirection: 'row',  
-    padding:5
+    flexDirection: 'row',
+    padding: 5
   },
   textInputInput: {
     backgroundColor: "white",
-    flex: 1, 
-    height: '100%', 
-    paddingLeft: 10, 
-    borderRadius:10,
-    borderWidth:1
+    flex: 1,
+    height: '100%',
+    paddingLeft: 10,
+    borderRadius: 10,
+    borderWidth: 1
   },
-  eyeIcon:{
-    width:25,
-    height:25,
-    marginRight:5,
-    alignSelf: 'center', 
+  eyeIcon: {
+    width: 25,
+    height: 25,
+    marginRight: 5,
+    alignSelf: 'center',
   },
-  viewMore:{
-    backgroundColor:"#EEEEEE",
-    justifyContent:"center",
-    alignItems:"center",
-    marginBottom:30,
-    paddingVertical:10,
-    paddingHorizontal:5,
-    borderRadius:10,
-    margin:'auto',
-    flexDirection:"row"
+  viewMore: {
+    backgroundColor: "#EEEEEE",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    borderRadius: 10,
+    margin: 'auto',
+    flexDirection: "row"
   },
   list: {
     flex: 1,
@@ -202,49 +209,49 @@ const styles = StyleSheet.create({
   },
   tagItem: {
     width: 100,
-    height: 40, 
+    height: 40,
     textAlign: "center",
-    justifyContent: 'center', 
-    alignItems: 'center',  
-    paddingVertical:10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
     borderRadius: 10,
   },
-  tagTaskText:{
-    marginLeft:25,
-    color:"#aaa",
-    fontSize:16
+  tagTaskText: {
+    marginLeft: 25,
+    color: "#aaa",
+    fontSize: 16
   },
-  taskView:{
-    marginHorizontal:25,
-    marginTop:15,
-    direction:"row",
-    backgroundColor:"#76ABAE",
-    padding:10,
-    borderRadius:10
+  taskView: {
+    marginHorizontal: 25,
+    marginTop: 15,
+    direction: "row",
+    backgroundColor: "#76ABAE",
+    padding: 10,
+    borderRadius: 10
   },
-  dropDownArrow:{
-    width:20,
-    height:30,
+  dropDownArrow: {
+    width: 20,
+    height: 30,
   },
-  labels:{
-    marginVertical:30
+  labels: {
+    marginVertical: 30
   },
-  columnWrapper:{
-    justifyContent:"space-between",
-    marginHorizontal:20,
-    marginTop:20
-    
+  columnWrapper: {
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    marginTop: 20
+
   },
-  dropDownArrowUp:{
-    width:20,
-    height:30,
-    zIndex:1,
+  dropDownArrowUp: {
+    width: 20,
+    height: 30,
+    zIndex: 1,
     transform: [{ rotate: '180deg' }],
   },
   dot: {
-    width: 20, 
-    height: 20, 
-    borderRadius: 10,  
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     marginRight: 10,
   },
   pointItem: {
@@ -254,14 +261,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 3,
   },
-  pointDropDown:{
-    borderRadius:25,
-    backgroundColor:"#1B2027",
-    marginTop:10,
-    flex:1,
+  pointDropDown: {
+    borderRadius: 25,
+    backgroundColor: "#1B2027",
+    marginTop: 10,
+    flex: 1,
   },
-  tags:{
-    backgroundColor:"red"
+  tags: {
+    backgroundColor: "red"
   },
   pointName: {
     fontSize: 18,
@@ -276,7 +283,7 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     width: '40%',
     marginTop: 10,
-    
+
   },
   dropdown: {
     height: 40,
@@ -307,9 +314,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  task:{
-    marginBottom:30,
-    
+  task: {
+    marginBottom: 30,
+
   },
   bottomBar: {
     flexDirection: 'row',

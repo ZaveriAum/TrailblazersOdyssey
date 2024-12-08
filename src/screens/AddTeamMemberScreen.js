@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import NavigationBar from "../components/NavigationBar";
-import TeamService from "../service/TeamService"; // Import the TeamService to interact with the backend
-import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect to refetch data
+import TeamService from "../service/TeamService"; 
+import { useFocusEffect } from "@react-navigation/native"; 
 
 export default function AddTeamMemberScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -28,7 +28,7 @@ export default function AddTeamMemberScreen({ navigation }) {
       const response = await TeamService.createMember(newMember);
       if (response.data.status) {
         Alert.alert("Success", "Member added successfully.");
-        navigation.goBack(); // Navigate back to the previous screen after success
+        navigation.goBack(); 
       } else {
         Alert.alert("Error", "Failed to add member.");
       }
