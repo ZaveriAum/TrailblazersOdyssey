@@ -127,7 +127,7 @@ export default function CreatePointScreen({ addPoint, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#1B2027',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     marginVertical: 15, // Reduced vertical margin
   },
   inputContainer: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: '#31363F',
     padding: 15, // Reduced padding
     borderRadius: 8, // Reduced border radius
     width: '85%', // Reduced width
