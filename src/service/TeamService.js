@@ -1,5 +1,5 @@
 import axios from 'axios'
-const BaseURI = "http://192.168.2.57:5000"
+const BaseURI = "http://192.168.1.218:5001"
 
 const TeamService = {
     async getMember(id){
@@ -21,6 +21,16 @@ const TeamService = {
     async updateMember(id, payload){
         const response = await axios.put(`${BaseURI}/api/v1/team/${id}`, payload);
         return response;
+    },
+
+    async deleteMember(id) {
+        try {
+            const response = await axios.delete(`${BaseURI}/api/v1/team/${id}`);
+            return response.data;  
+        } catch (error) {
+            console.error("Error deleting member:", error);
+            throw error;  
+        }
     },
 }
 

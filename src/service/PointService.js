@@ -1,5 +1,5 @@
 import axios from 'axios'
-const BaseURI = "http://192.168.2.57:5000"
+const BaseURI = "http://192.168.1.218:5001"
 
 const PointService = {
     async getPoint(id){
