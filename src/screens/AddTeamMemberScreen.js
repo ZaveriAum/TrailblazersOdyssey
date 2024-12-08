@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import NavigationBar from "../components/NavigationBar";
-import TeamService from "../service/TeamService";  // Import the TeamService to interact with the backend
+import TeamService from "../service/TeamService"; // Import the TeamService to interact with the backend
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect to refetch data
 
 export default function AddTeamMemberScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [firstName, setFirstName] = useState(""); // First name input
-  const [lastName, setLastName] = useState(""); // Last name input
+  const [firstName, setFirstName] = useState(""); 
+  const [lastName, setLastName] = useState(""); 
 
-  // Handle form submission
+
   const handleAddMember = async () => {
     if (!firstName || !lastName || !email || !phone) {
       Alert.alert("Error", "All fields are required.");

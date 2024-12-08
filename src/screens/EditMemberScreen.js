@@ -1,28 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
 import NavigationBar from "../components/NavigationBar";
-import TeamService from "../service/TeamService";  
+import TeamService from "../service/TeamService";
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
 
 export default function AboutScreen({ navigation }) {
-  const [team, setTeam] = useState([]);  
+  const [team, setTeam] = useState([]);
 
-  useEffect(() => {
-    fetchTeam(); 
-  }, []);
-
+  // Fetch the team data on initial load
   const fetchTeam = async () => {
     try {
-      const response = await TeamService.getTeam(); 
-      setTeam(response.data.team); 
+      const response = await TeamService.getTeam();
+      setTeam(response.data.team);
     } catch (error) {
       console.error("Error fetching team:", error);
     }
   };
 
+  // Use useFocusEffect to refetch team data whenever the screen is focused (e.g., when navigating back)
+  useFocusEffect(
+    useCallback(() => {
+      fetchTeam();  // Re-fetch team data when screen is focused
+    }, [])
+  );
+
   const handleDelete = async (id) => {
     try {
-      await TeamService.deleteMember(id);  
-      fetchTeam();  
+      await TeamService.deleteMember(id);  // Delete the member
+      fetchTeam();  // Refetch team data after deletion
     } catch (error) {
       console.error("Error deleting member:", error);
       Alert.alert("Error", "There was an issue deleting the member.");
@@ -35,11 +40,11 @@ export default function AboutScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <Text style={styles.heading}>Team Members</Text>
-        
+
         {team.map((member, index) => (
           <View key={index} style={styles.box}>
             <Text style={styles.developerText}>{member.first_name} {member.last_name}</Text>
-            
+
             <TouchableOpacity
               style={styles.deleteButton}
               onPress={() => handleDelete(member._id)}  // Pass member id to delete
@@ -48,10 +53,10 @@ export default function AboutScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         ))}
-        
+
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.navigate('AddMember')}
+          onPress={() => navigation.navigate("AddMember")}  // Navigate to AddMember screen
         >
           <Text style={styles.addButtonText}>Add New Member</Text>
         </TouchableOpacity>
@@ -84,7 +89,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     marginBottom: 30,
-    alignSelf: 'center', 
+    alignSelf: 'center',
   },
   addButtonText: {
     fontSize: 16,
