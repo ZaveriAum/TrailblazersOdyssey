@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   detailCard: {
     marginBottom: 15,
     padding: 10,
-    backgroundColor: '#222',
+    backgroundColor: '#31363F',
     borderRadius: 10,
     alignSelf: 'flex-start',
   },
@@ -330,6 +330,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   backButtonText: {
+    paddingHorizontal:15,
+    paddingVertical:10,
     fontSize: 16,
     color: '#1E1E1E',
   },
