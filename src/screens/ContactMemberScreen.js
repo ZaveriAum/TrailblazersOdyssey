@@ -3,11 +3,10 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert 
 import NavigationBar from "../components/NavigationBar";
 
 export default function ContactMemberScreen({ navigation }) {
-  const [message, setMessage] = useState("");  // Store the message input
-  const [isSMSChecked, setIsSMSChecked] = useState(false);  // SMS checkbox state
-  const [isEmailChecked, setIsEmailChecked] = useState(false);  // Email checkbox state
+  const [message, setMessage] = useState("");
+  const [isSMSChecked, setIsSMSChecked] = useState(false);
+  const [isEmailChecked, setIsEmailChecked] = useState(false);
 
-  // Function to create a custom checkbox button
   const CustomCheckbox = ({ checked, onPress }) => (
     <TouchableOpacity onPress={onPress} style={[styles.customCheckbox, checked && styles.checked]}>
       {checked && <View style={styles.checkedCircle} />}
@@ -32,14 +31,14 @@ export default function ContactMemberScreen({ navigation }) {
       sendMethod = "Email";
     }
 
-    // Directly alert the user with the chosen method
+    
     Alert.alert(
       `${sendMethod} Sent`,
       `Your message: "${message}" has been sent via ${sendMethod}.`
     );
-    setMessage("");  // Clear message after sending
-    setIsSMSChecked(false);  // Reset SMS checkbox
-    setIsEmailChecked(false);  // Reset Email checkbox
+    setMessage("");
+    setIsSMSChecked(false);
+    setIsEmailChecked(false);
   };
 
   return (
@@ -49,7 +48,6 @@ export default function ContactMemberScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <Text style={styles.heading}>Contact Member</Text>
 
-        {/* Checkboxes for SMS and Email */}
         <View style={styles.checkboxContainer}>
           <View style={styles.checkboxWrapper}>
             <CustomCheckbox checked={isSMSChecked} onPress={() => setIsSMSChecked(!isSMSChecked)} />
@@ -61,7 +59,6 @@ export default function ContactMemberScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Message Input Box */}
         <TextInput
           style={styles.input}
           placeholder="Enter your message"
@@ -71,7 +68,6 @@ export default function ContactMemberScreen({ navigation }) {
           onChangeText={setMessage}
         />
 
-        {/* Send Message Button */}
         <TouchableOpacity style={styles.button} onPress={sendMessage}>
           <Text style={styles.buttonText}>Send Message</Text>
         </TouchableOpacity>
@@ -106,8 +102,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginBottom: 20,
-    textAlignVertical: "top", // Align text to the top of the input field
-    height: 150, // Make the input box larger for multiline text
+    textAlignVertical: "top",
+    height: 150,
   },
   checkboxContainer: {
     flexDirection: "row",
@@ -128,7 +124,7 @@ const styles = StyleSheet.create({
   customCheckbox: {
     width: 30,
     height: 30,
-    borderRadius: 15, // Circular shape
+    borderRadius: 15,
     borderWidth: 2,
     borderColor: "#FFF",
     justifyContent: "center",
@@ -136,7 +132,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   checked: {
-    backgroundColor: "#28a745", // Green when checked
+    backgroundColor: "#28a745",
     borderColor: "#28a745",
   },
   checkedCircle: {
