@@ -19,7 +19,9 @@ const PointService = {
     },
 
     async updatePoint(id, payload){
+        console.log(id,payload)
         const response = await axios.put(`${BaseURI}/api/v1/points/${id}`, payload);
+        console.log(response)
         return response;
     },
 

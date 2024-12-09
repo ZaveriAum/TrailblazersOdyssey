@@ -35,6 +35,7 @@ export default function EditPointScreen({ navigation }) {
   const [tagName, setTagName] = useState('');
   const [tagColor, setTagColor] = useState('');
 
+
   const handleSelectPoint = (pointId) => {
     if (!pointId) {
       setSelectedPoint(null);
@@ -45,7 +46,7 @@ export default function EditPointScreen({ navigation }) {
       return;
     }
 
-    const point = points.find((p) => p._id === parseInt(pointId));
+    const point = points.find((p) => p._id ===pointId);
     if (point) {
       setSelectedPoint(point);
       setPointName(point.name);
@@ -70,6 +71,7 @@ export default function EditPointScreen({ navigation }) {
   };
 
   const savePoint = () => {
+    console.log("hi")
     if (!pointName || !pointTask || !pointAddress) {
       alert('Please fill out all fields!');
       return;
@@ -81,8 +83,9 @@ export default function EditPointScreen({ navigation }) {
         : point
     );
 
+
     setPoints(updatedPoints);
-    alert('Point updated successfully!');
+    PointService.updatePoint(selectedPoint._id,selectedPoint)
   };
 
   const deletePoint = () => {
@@ -176,7 +179,7 @@ export default function EditPointScreen({ navigation }) {
                       key={index}
                       style={[styles.tag, { backgroundColor: tag.color || '#EEE' }]}
                     >
-                      <Text style={styles.tagText}>{tag.name}</Text>
+                      <Text style={styles.tagText}>{tag.tagname}</Text>
                       <TouchableOpacity onPress={() => removeTag(index)}>
                         <Text style={styles.tagRemove}>✖</Text>
                       </TouchableOpacity>
@@ -278,7 +281,7 @@ const styles = StyleSheet.create({
     margin: 5, // Reduced margin
   },
   tagText: {
-    color: '#FFFFFF',
+    color: 'black',
     marginRight: 6, // Reduced margin
     fontSize: 12, // Reduced font size
   },
