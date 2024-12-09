@@ -12,6 +12,14 @@ export default function CreatePointScreen({ addPoint, navigation }) {
   const [tagColor, setTagColor] = useState('');
   const [difficulty, setDifficulty] = useState('');
 
+
+  const handleDifficulty = (text) => {
+    if (/^\d*$/.test(text) && (text === '' || (parseInt(text) >= 1 && parseInt(text) <= 10))) {
+      setDifficulty(text);
+    }
+  };
+
+
   const addTag = () => {
     if (tagName && tagColor) {
       setTags([...tags, { tagname: tagName, tagColor: tagColor }]);
@@ -40,21 +48,21 @@ export default function CreatePointScreen({ addPoint, navigation }) {
       difficulty: difficulty,
     };
 
-    PointService.createPoints(newPoint).then((res)=>{
-      setTimeout(()=>{
+    PointService.createPoints(newPoint).then((res) => {
+      setTimeout(() => {
         alert("Successfully added Point");
       }, 2000)
-    }).catch((e)=>{
-      setTimeout(()=>{
+    }).catch((e) => {
+      setTimeout(() => {
         console.log(e.message)
-      alert("There was an error adding your point")
-    }, 2000)
-  })
+        alert("There was an error adding your point")
+      }, 2000)
+    })
     setPointName('');
     setPointTask('');
     setPointAddress('');
     setTags([]);
-    navigation.navigate('Home'); 
+    navigation.navigate('Home');
   };
 
   return (
@@ -89,12 +97,13 @@ export default function CreatePointScreen({ addPoint, navigation }) {
             value={pointAddress}
             onChangeText={setPointAddress}
           />
-          <Text style={styles.label}>Difficulty:</Text>
+          <Text style={styles.label}>Difficulty (Number from 1 to 10):</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter Difficulty"
             value={difficulty}
-            onChangeText={setDifficulty}
+            onChangeText={handleDifficulty}
+            keyboardType="numeric"
           />
 
           <Text style={styles.label}>Add Tags:</Text>
@@ -121,9 +130,9 @@ export default function CreatePointScreen({ addPoint, navigation }) {
             {tags.map((tag, index) => (
               <View
                 key={index}
-                style={[styles.tag, { backgroundColor: tag.color || '#EEE' }]}
+                style={[styles.tag, { backgroundColor: tag.color || tag.tagColor || '#EEE' }]}
               >
-                <Text style={styles.tagText}>{tag.name}</Text>
+                <Text style={styles.tagText}>{tag.name || tag.tagname}</Text>
                 <TouchableOpacity onPress={() => removeTag(index)}>
                   <Text style={styles.tagRemove}>✖</Text>
                 </TouchableOpacity>
@@ -143,7 +152,7 @@ export default function CreatePointScreen({ addPoint, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#1B2027',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -160,7 +169,7 @@ const styles = StyleSheet.create({
     marginVertical: 15, // Reduced vertical margin
   },
   inputContainer: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: '#31363F',
     padding: 15, // Reduced padding
     borderRadius: 8, // Reduced border radius
     width: '85%', // Reduced width
@@ -238,5 +247,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14, // Reduced font size
     fontWeight: 'bold',
-  },
+  },
 });
