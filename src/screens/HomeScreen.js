@@ -21,6 +21,7 @@ export default function HomeScreen({ navigation }) {
   const [dropdownOpen, setdropDownOpen] = useState(false);
   const [dropdownValue, setDropdownValue] = useState(null);
   const [miniDropDown, setMiniDropDown] = useState("Name")
+  const [isLoading,setIsLoading] = useState(true)
   const [miniDropDownOpen, setminiDropDownOpen] = useState(false)
   const handleNavigate = (pointId) => {
     // Navigate to a detailed screen
@@ -34,8 +35,9 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     PointService.getPoints().then((res) => {
       setPoints(res.data.points)
-    }).catch((e) => {
+    }).then(setIsLoading(false)).catch((e) => {
       console.log("error", e)
+      setIsLoading(false)
     })
   }, [])
 
@@ -50,6 +52,11 @@ export default function HomeScreen({ navigation }) {
   }
   );
 
+  if(isLoading){
+    return(
+      <View style={styles.noPoints}><Text style={styles.noPointsText}>Loading Points</Text></View>
+    )
+  }
   return (
     <View style={styles.container}>
       <NavigationBar navigation={navigation} />

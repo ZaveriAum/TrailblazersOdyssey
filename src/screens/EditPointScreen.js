@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,24 +9,23 @@ import {
 } from 'react-native';
 import NavigationBar from '../components/NavigationBar';
 import {Picker} from '@react-native-picker/picker'
+import PointService from '../service/PointService';
 
 export default function EditPointScreen({ navigation }) {
-  const [points, setPoints] = useState([
-    {
-      id: 1,
-      name: 'Point 1',
-      task: 'Task for Point 1',
-      address: '123 Main St',
-      tags: [{ name: 'Tag1', color: 'red' }, { name: 'Tag2', color: 'blue' }],
-    },
-    {
-      id: 2,
-      name: 'Point 2',
-      task: 'Task for Point 2',
-      address: '456 Elm St',
-      tags: [{ name: 'Tag3', color: 'green' }],
-    },
-  ]);
+  const [points, setPoints] = useState([]);
+  const [isLoading,setIsLoading] = useState(true) 
+  useEffect(() => {
+    PointService.getPoints()
+      .then((res) => {
+        setPoints(res.data.points); 
+        
+        setIsLoading(false);  
+      })
+      .catch((e) => {
+        console.log('error', e);
+        setIsLoading(false);  
+      });
+  }, []);
 
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [pointName, setPointName] = useState('');
@@ -46,7 +45,7 @@ export default function EditPointScreen({ navigation }) {
       return;
     }
 
-    const point = points.find((p) => p.id === parseInt(pointId));
+    const point = points.find((p) => p._id === parseInt(pointId));
     if (point) {
       setSelectedPoint(point);
       setPointName(point.name);
@@ -55,8 +54,10 @@ export default function EditPointScreen({ navigation }) {
       setTags(point.tags || []);
     }
   };
-
-  const addTag = () => {
+/* {"__v": 0,
+ "_id": "6753113d238d7cea4174406a", "address": "CN Tower", "difficulty": 10, "name": "Point 2", "rating": 4.25, "tags": [[Object], [Object], [Object], [Object], [Object], [Object], [Object], [Object], [Object]], "task": "take selfie with Drake"}
+ */ 
+ const addTag = () => {
     if (tagName && tagColor) {
       setTags([...tags, { name: tagName, color: tagColor }]);
       setTagName('');
@@ -75,7 +76,7 @@ export default function EditPointScreen({ navigation }) {
     }
 
     const updatedPoints = points.map((point) =>
-      point.id === selectedPoint.id
+      point._id === selectedPoint._id
         ? { ...point, name: pointName, task: pointTask, address: pointAddress, tags: tags }
         : point
     );
@@ -86,7 +87,7 @@ export default function EditPointScreen({ navigation }) {
 
   const deletePoint = () => {
     if (selectedPoint) {
-      setPoints(points.filter((point) => point.id !== selectedPoint.id));
+      setPoints(points.filter((point) => point._id !== selectedPoint._id));
       setSelectedPoint(null);
       setPointName('');
       setPointTask('');
@@ -114,13 +115,13 @@ export default function EditPointScreen({ navigation }) {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Select a Point:</Text>
             <Picker
-              selectedValue={selectedPoint ? selectedPoint.id.toString() : ''}
+              selectedValue={selectedPoint ? selectedPoint._id: ''}
               onValueChange={(value) => handleSelectPoint(value)}
               style={styles.picker}
             >
               <Picker.Item label="Select a Point" value="" />
               {points.map((point) => (
-                <Picker.Item key={point.id} label={point.name} value={point.id.toString()} />
+                <Picker.Item key={point._id} label={point.name} value={point._id} />
               ))}
             </Picker>
           </View>

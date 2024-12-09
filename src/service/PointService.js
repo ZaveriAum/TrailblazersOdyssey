@@ -9,6 +9,7 @@ const PointService = {
 
     async getPoints(){
         const response = await axios.get(`${BaseURI}/api/v1/points`);
+
         return response;
     },
 
