@@ -28,9 +28,6 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate('PointDetailScreen', { pointId });
   };
 
-  useEffect(() => {
-    console.log(miniDropDown)
-  }, [miniDropDown])
 
   useEffect(() => {
     PointService.getPoints().then((res) => {

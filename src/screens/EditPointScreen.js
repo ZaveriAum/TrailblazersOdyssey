@@ -55,9 +55,6 @@ export default function EditPointScreen({ navigation }) {
       setTags(point.tags || []);
     }
   };
-/* {"__v": 0,
- "_id": "6753113d238d7cea4174406a", "address": "CN Tower", "difficulty": 10, "name": "Point 2", "rating": 4.25, "tags": [[Object], [Object], [Object], [Object], [Object], [Object], [Object], [Object], [Object]], "task": "take selfie with Drake"}
- */ 
  const addTag = () => {
     if (tagName && tagColor) {
       setTags([...tags, { name: tagName, color: tagColor }]);
@@ -71,40 +68,62 @@ export default function EditPointScreen({ navigation }) {
   };
 
   const savePoint = () => {
-    console.log("hi")
     if (!pointName || !pointTask || !pointAddress) {
       alert('Please fill out all fields!');
       return;
     }
 
-    const updatedPoints = points.map((point) =>
-      point._id === selectedPoint._id
-        ? { ...point, name: pointName, task: pointTask, address: pointAddress, tags: tags }
-        : point
-    );
+    const updatedTags = tags.map(tag => 
+      
+      ({
+      tagname: tag.name || tag.tagname,
+      tagColor: tag.color || tag.tagColor,
+      _id: tag._id || null
+    }));
 
+    const updatedPoint = {
+      name: pointName,
+      task: pointTask,
+      address: pointAddress,
+      tags: updatedTags,
+    };
 
-    setPoints(updatedPoints);
-    PointService.updatePoint(selectedPoint._id,selectedPoint)
+    PointService.updatePoint(selectedPoint._id, updatedPoint)
+    .then((response) => {
+      alert('Point updated successfully!'); 
+      navigation.navigate("Home");  
+    })
+      .catch((error) => {
+        console.error('Error updating point:', error);
+        alert('There was an error updating the point.');
+      });
   };
 
-  const deletePoint = () => {
-    if (selectedPoint) {
+  const deletePoint = async () => {
+    if (!selectedPoint) {
+      alert('Validation Error', 'No point selected to delete.');
+      return;
+    }
+
+    try {
+      await PointService.deletePoint(selectedPoint._id); 
+      alert('Success', 'Point deleted successfully!');
+
+      
       setPoints(points.filter((point) => point._id !== selectedPoint._id));
       setSelectedPoint(null);
       setPointName('');
       setPointTask('');
       setPointAddress('');
       setTags([]);
-      alert('Point deleted successfully!');
-    } else {
-      alert('No point selected to delete.');
+    } catch (error) {
+      console.error('Error deleting point:', error);
+      Alert.alert('Error', 'Failed to delete the point.');
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Add NavigationBar here */}
       <NavigationBar navigation={navigation} />
 
       <Text style={styles.header}>Edit or Delete a Point!</Text>
@@ -177,9 +196,9 @@ export default function EditPointScreen({ navigation }) {
                   {tags.map((tag, index) => (
                     <View
                       key={index}
-                      style={[styles.tag, { backgroundColor: tag.color || '#EEE' }]}
+                      style={[styles.tag, { backgroundColor: tag.color || tag.tagColor || '#EEE' }]}
                     >
-                      <Text style={styles.tagText}>{tag.tagname}</Text>
+                      <Text style={styles.tagText}>{tag.tagname || tag.name}</Text>
                       <TouchableOpacity onPress={() => removeTag(index)}>
                         <Text style={styles.tagRemove}>✖</Text>
                       </TouchableOpacity>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import NavigationBar from '../components/NavigationBar';
+import PointService from '../service/PointService';
 
 export default function CreatePointScreen({ addPoint, navigation }) {
   const [pointName, setPointName] = useState('');
@@ -9,10 +10,11 @@ export default function CreatePointScreen({ addPoint, navigation }) {
   const [tags, setTags] = useState([]);
   const [tagName, setTagName] = useState('');
   const [tagColor, setTagColor] = useState('');
+  const [difficulty, setDifficulty] = useState('');
 
   const addTag = () => {
     if (tagName && tagColor) {
-      setTags([...tags, { name: tagName, color: tagColor }]);
+      setTags([...tags, { tagname: tagName, tagColor: tagColor }]);
       setTagName('');
       setTagColor('');
     } else {
@@ -31,21 +33,28 @@ export default function CreatePointScreen({ addPoint, navigation }) {
     }
 
     const newPoint = {
-      id: Date.now(),
       name: pointName,
-      task: pointTask,
       address: pointAddress,
+      task: pointTask,
       tags: tags,
+      difficulty: difficulty,
     };
 
-    console.log('New point created:', newPoint);
-    addPoint(newPoint); 
-    alert('Point added successfully!');
+    PointService.createPoints(newPoint).then((res)=>{
+      setTimeout(()=>{
+        alert("Successfully added Point");
+      }, 2000)
+    }).catch((e)=>{
+      setTimeout(()=>{
+        console.log(e.message)
+      alert("There was an error adding your point")
+    }, 2000)
+  })
     setPointName('');
     setPointTask('');
     setPointAddress('');
     setTags([]);
-    navigation.navigate('EditPoint'); 
+    navigation.navigate('Home'); 
   };
 
   return (
@@ -79,6 +88,13 @@ export default function CreatePointScreen({ addPoint, navigation }) {
             placeholder="Enter Point Address"
             value={pointAddress}
             onChangeText={setPointAddress}
+          />
+          <Text style={styles.label}>Difficulty:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Difficulty"
+            value={difficulty}
+            onChangeText={setDifficulty}
           />
 
           <Text style={styles.label}>Add Tags:</Text>
@@ -127,7 +143,7 @@ export default function CreatePointScreen({ addPoint, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1B2027',
+    backgroundColor: '#1E1E1E',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -144,7 +160,7 @@ const styles = StyleSheet.create({
     marginVertical: 15, // Reduced vertical margin
   },
   inputContainer: {
-    backgroundColor: '#31363F',
+    backgroundColor: '#2A2A2A',
     padding: 15, // Reduced padding
     borderRadius: 8, // Reduced border radius
     width: '85%', // Reduced width
@@ -222,5 +238,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14, // Reduced font size
     fontWeight: 'bold',
-  },
+  },
 });

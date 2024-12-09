@@ -19,16 +19,26 @@ const PointService = {
     },
 
     async updatePoint(id, payload){
-        console.log(id,payload)
         const response = await axios.put(`${BaseURI}/api/v1/points/${id}`, payload);
-        console.log(response)
         return response;
     },
+
+    async deletePoint(id) {
+        try {
+          const response = await axios.delete(`${BaseURI}/api/v1/points/${id}`);
+          return response;
+        } catch (error) {
+          console.error('Axios Error:', error);
+          throw error;
+        }
+      },
+
 
     async getLatLong(address){
         const response = await axios.get(`https://geocode.maps.co/search?q=${address}&api_key=6748a42ba4a04952440853gyda9bb14`);
         return response
     }
+
 
 }
 
