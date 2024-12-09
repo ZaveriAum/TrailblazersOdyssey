@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import NavigationBar from "../components/NavigationBar";
+import * as Animatable from 'react-native-animatable';
+
 export default function AboutScreen({ navigation }) {
   const developers = [
     { name: "Aum Zaveri" },

@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from "rea
 import NavigationBar from "../components/NavigationBar";
 import TeamService from "../service/TeamService";
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
-
+import * as Animatable from 'react-native-animatable';
 export default function AboutScreen({ navigation }) {
   const [team, setTeam] = useState([]);
 
@@ -42,7 +42,10 @@ export default function AboutScreen({ navigation }) {
         <Text style={styles.heading}>Team Members</Text>
 
         {team.map((member, index) => (
-          <View key={index} style={styles.box}>
+          <Animatable.View 
+          animation="slideInLeft"
+          duration={600}
+          key={index} style={styles.box}>
             <Text style={styles.developerText}>{member.first_name} {member.last_name}</Text>
 
             <TouchableOpacity
@@ -51,7 +54,7 @@ export default function AboutScreen({ navigation }) {
             >
               <Text style={styles.deleteButtonText}>Delete</Text>
             </TouchableOpacity>
-          </View>
+          </Animatable.View>
         ))}
 
         <TouchableOpacity

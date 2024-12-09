@@ -6,6 +6,8 @@ import dropdown from "../../assets/images/drop-down.png"
 import eye from "../../assets/images/eye.png"
 import searchIcon from "../../assets/images/search.png"
 import PointService from '../service/PointService';
+import * as Animatable from 'react-native-animatable';
+
 export default function HomeScreen({ navigation }) {
   const [search, setSearch] = useState("");
 
@@ -63,7 +65,10 @@ export default function HomeScreen({ navigation }) {
         data={filteredPoints}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <View style={styles.pointItem}>
+          <Animatable.View
+            animation="bounceIn"
+            duration={900}
+          style={styles.pointItem}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View style={[styles.dot, { backgroundColor: difficulties[item.difficulty - 1] }]} />
               <Text style={styles.pointName}>{item.name}</Text>
@@ -115,7 +120,7 @@ export default function HomeScreen({ navigation }) {
                 </TouchableOpacity>
               </View>
             )}
-          </View>
+          </Animatable.View>
         )}
         style={styles.list}
       /> : <View style={styles.noPoints}><Text style={styles.noPointsText}>No points can be found</Text></View>}
